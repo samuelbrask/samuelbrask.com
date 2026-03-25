@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FAQ — StepGate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1a1a;
+  --ink-soft: #5a5a5a;
+  --ink-faint: #9a9a9a;
+  --paper: #faf9f7;
+  --paper-warm: #f3f1ed;
+  --accent: #2c5f8a;
+  --rule: #e0ddd8;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+header {
+  border-bottom: 1px solid var(--rule);
+  padding: 24px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.app-badge {
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+main {
+  max-width: 720px;
+  margin: 64px auto;
+  padding: 0 48px;
+}
+.doc-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
+}
+h1 {
+  font-family: var(--serif);
+  font-size: 42px;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.last-updated {
+  font-size: 14px;
+  color: var(--ink-faint);
+  margin-bottom: 48px;
+}
+h2 {
+  font-family: var(--serif);
+  font-size: 20px;
+  margin-top: 40px;
+  margin-bottom: 8px;
+  color: var(--ink);
+}
+.section-heading {
+  font-family: var(--serif);
+  font-size: 26px;
+  margin-top: 64px;
+  margin-bottom: 4px;
+  color: var(--ink);
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+p {
+  font-size: 15px;
+  color: var(--ink-soft);
+  font-weight: 300;
+  margin-bottom: 16px;
+}
+ol {
+  margin: 12px 0 16px 20px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  font-weight: 300;
+}
+ol li { margin-bottom: 8px; }
+.highlight-box {
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin: 32px 0;
+}
+.highlight-box p {
+  margin-bottom: 0;
+  font-weight: 400;
+  color: var(--ink);
+}
+a { color: var(--accent); }
+.contact-box {
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 28px 32px;
+  margin-top: 64px;
+  margin-bottom: 16px;
+}
+.contact-box p {
+  margin-bottom: 8px;
+}
+.contact-box p:last-child {
+  margin-bottom: 0;
+}
+footer {
+  border-top: 1px solid var(--rule);
+  padding: 32px 48px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-faint);
+  margin-top: 80px;
+}
+@media (max-width: 600px) {
+  header { padding: 16px 24px; }
+  main { padding: 0 24px; margin: 40px auto; }
+  h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="logo">Brask Digital</a>
+  <span class="app-badge">StepGate</span>
+</header>
+
+<main>
+  <p class="doc-label">Support</p>
+  <h1>Frequently Asked Questions</h1>
+  <p class="last-updated">Last updated: March 2026</p>
+
+  <!-- HOW IT WORKS -->
+  <h2 class="section-heading">How It Works</h2>
+
+  <h2>How does StepGate work?</h2>
+  <p>StepGate reads your daily step count from Apple Health and uses it to unlock your chosen apps. You start each day with a free base amount of screen time. As you walk, you earn extra minutes — every 1,000 steps adds to your balance. Once you hit your daily step goal, all your selected apps are fully unlocked for the rest of the day.</p>
+
+  <h2>Which apps can I lock?</h2>
+  <p>Any app on your iPhone. When you set up StepGate, you choose exactly which apps to restrict — social media, games, streaming, or anything else you want to earn back. You're always in control of what's on the list.</p>
+
+  <h2>What is "base time"?</h2>
+  <p>Base time is a free daily allowance of screen time that you get regardless of your steps. It's there so you're never completely locked out first thing in the morning. You can adjust the amount in Settings.</p>
+
+  <h2>What happens if I don't reach my step goal?</h2>
+  <p>Your apps stay locked until you walk enough to unlock them — or until midnight resets the day. Any unused minutes from your Step Bank can carry over, so a strong day yesterday can give you a head start today.</p>
+
+  <h2>What is the Step Bank?</h2>
+  <p>If you earn more screen time than you use on a given day, the surplus is saved in your Step Bank and carried over to the next day. It rewards consistency without wasting your effort.</p>
+
+  <h2>What are Weekly Challenges?</h2>
+  <p>Weekly Challenges are optional goals that earn you bonus screen time when completed. They refresh every week and are designed to keep motivation up beyond your daily routine.</p>
+
+  <!-- TECHNICAL -->
+  <h2 class="section-heading">Technical Questions</h2>
+
+  <h2>Does StepGate work without Apple Health?</h2>
+  <p>No. StepGate reads your step data from Apple Health, so you need to grant Health permission during setup. If you deny access, the app cannot track your progress. You can update permissions anytime in iPhone Settings → Privacy &amp; Security → Health → StepGate.</p>
+
+  <h2>Does it drain my battery?</h2>
+  <p>No more than any other Health-connected app. StepGate uses Apple's native HealthKit and Screen Time APIs, which are designed for low battery impact. It does not run continuous GPS or background location tracking.</p>
+
+  <h2>My steps aren't updating. What do I do?</h2>
+  <p>Try these steps in order:</p>
+  <ol>
+    <li>Open the Health app and confirm your step count is showing there.</li>
+    <li>Go to iPhone Settings → Privacy &amp; Security → Health → StepGate and make sure Steps is enabled.</li>
+    <li>Force-close StepGate and reopen it.</li>
+    <li>Restart your iPhone.</li>
+  </ol>
+  <p>If the problem persists, contact <a href="mailto:support@samuelbrask.com">support@samuelbrask.com</a>.</p>
+
+  <h2>Why aren't my apps unlocking even though I've hit my goal?</h2>
+  <p>This is usually a Screen Time permission issue. Go to iPhone Settings → Screen Time and make sure StepGate has the necessary permissions. If Screen Time is managed by a family organiser on your device, self-managed restrictions may not be available. Try restarting the app after confirming permissions.</p>
+
+  <h2>Does StepGate work on iPad or Apple Watch?</h2>
+  <p>StepGate is currently iPhone-only. An Apple Watch companion app is planned for a future release.</p>
+
+  <!-- SUBSCRIPTION & PAYMENT -->
+  <h2 class="section-heading">Subscription &amp; Payment</h2>
+
+  <h2>What does StepGate cost?</h2>
+  <p>StepGate requires a subscription to use. The yearly plan includes a 7-day free trial — no payment is taken during the trial period.</p>
+  <div class="highlight-box">
+    <p>⭐ <strong>Yearly: 149,00 kr/year</strong> — includes a 7-day free trial<br>
+    Weekly: 19,99 kr/week — no trial</p>
+  </div>
+  <p>Subscriptions are managed through your Apple ID and renew automatically until cancelled.</p>
+
+  <h2>How do I cancel my subscription?</h2>
+  <p>Go to iPhone Settings → Apple ID → Subscriptions → StepGate → Cancel Subscription. You keep access until the end of the current billing period. StepGate never charges a cancellation fee.</p>
+
+  <h2>I was charged after my free trial. Can I get a refund?</h2>
+  <p>Refunds are handled by Apple, not by StepGate directly. Visit <a href="https://reportaproblem.apple.com">reportaproblem.apple.com</a>, find the charge, and request a refund. Apple typically processes these within a few days.</p>
+
+  <!-- PRIVACY -->
+  <h2 class="section-heading">Privacy</h2>
+
+  <h2>Does StepGate collect or share my data?</h2>
+  <p>No. All data — steps, screen time, goals, achievements — stays entirely on your device. StepGate does not have servers, does not require an account, and does not send any data anywhere. Your Health data is never shared with third parties.</p>
+  <p>StepGate uses two Apple APIs:</p>
+  <ol>
+    <li><strong>HealthKit</strong> — to read your step count (read-only, local)</li>
+    <li><strong>Screen Time API (FamilyControls)</strong> — to apply the app restrictions you configure yourself</li>
+  </ol>
+  <p>Neither API transmits data outside your iPhone.</p>
+
+  <!-- CONTACT -->
+  <div class="contact-box">
+    <p><strong>Still need help?</strong></p>
+    <p>Email us at <a href="mailto:support@samuelbrask.com">support@samuelbrask.com</a> — we aim to reply within 48 hours.</p>
+  </div>
+</main>
+
+<footer>
+  © 2026 Brask Digital · <a href="/privacy_stepgate">Privacy Policy</a> · <a href="/terms_stepgate">Terms of Service</a>
+</footer>
+
+</body>
+</html>
