@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brask Digital — Hjemmesider til private tandklinikker</title>
+<meta name="description" content="Vi bygger nye, moderne hjemmesider til private danske tandklinikker. Du ser dit nye site før du betaler. Komplet redesign på 7 dage, fast pris 12.500 kr.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #F5F0E8;
+  --bg-card: #FBF8F2;
+  --ink:     #18150F;
+  --ink-2:   #4A4540;
+  --ink-3:   #8C877E;
+  --sage:    #3C5040;
+  --sage-2:  #6A8270;
+  --sage-3:  #C8D9CA;
+  --clay:    #B06A3A;
+  --clay-2:  #D4955E;
+  --clay-bg: #F0E4D4;
+  --line:    #DDD7CC;
+  --max:     1160px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'DM Sans',-apple-system,sans-serif;
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 32px}
+@media(max-width:600px){.wrap{padding:0 20px}}
+
+/* ─── Typography ─── */
+.serif{font-family:'Fraunces',serif;font-weight:380;letter-spacing:-0.022em;line-height:1.04;font-variation-settings:"opsz" 120}
+.serif em{font-style:italic;font-weight:360;color:var(--sage)}
+.eyebrow{font-size:11px;letter-spacing:0.24em;text-transform:uppercase;font-weight:500;color:var(--clay)}
+
+/* ─── Nav ─── */
+nav{padding:28px 0;border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;justify-content:space-between;align-items:center}
+.brand{text-decoration:none;color:var(--ink)}
+.brand-top{display:block;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--sage);font-weight:500;margin-bottom:3px}
+.brand-name{font-family:'Fraunces',serif;font-size:18px;font-weight:500}
+.nav-cta{
+  background:var(--ink);color:var(--bg);
+  padding:11px 20px;font-size:13px;font-weight:500;
+  text-decoration:none;letter-spacing:0.02em;
+  transition:background .2s;
+}
+.nav-cta:hover{background:var(--sage)}
+
+/* ─── Hero ─── */
+.hero{padding:80px 0 70px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center}
+.hero-eyebrow{margin-bottom:22px}
+.hero h1{font-size:clamp(40px,5.5vw,72px);margin-bottom:28px;max-width:16ch}
+.hero-lead{font-size:18px;color:var(--ink-2);max-width:50ch;line-height:1.55;margin-bottom:36px}
+.hero-lead strong{color:var(--ink);font-weight:500}
+.btns{display:flex;gap:14px;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:15px 24px;font-size:14px;font-weight:500;
+  text-decoration:none;border:1.5px solid transparent;
+  transition:all .2s;letter-spacing:0.01em;
+}
+.btn-dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn-dark:hover{background:var(--sage);border-color:var(--sage)}
+.btn-outline{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn-outline:hover{background:var(--ink);color:var(--bg)}
+.hero-trust{margin-top:28px;display:flex;gap:24px;flex-wrap:wrap}
+.trust-pill{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.trust-pill::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--sage-2)}
+
+/* ─── Browser Mockup ─── */
+.browser-wrap{position:relative}
+.browser{
+  background:#fff;
+  border:1px solid var(--line);
+  box-shadow:0 24px 60px rgba(24,21,15,.12),0 4px 12px rgba(24,21,15,.06);
+  transform:perspective(900px) rotateY(-6deg) rotateX(2deg);
+  transform-origin:left center;
+  animation:float 5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:perspective(900px) rotateY(-6deg) rotateX(2deg) translateY(0)}50%{transform:perspective(900px) rotateY(-6deg) rotateX(2deg) translateY(-8px)}}
+.browser-bar{
+  background:#EDE8DF;padding:10px 14px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--line);
+}
+.b-dots{display:flex;gap:5px}
+.b-dot{width:9px;height:9px;border-radius:50%}
+.b-dot:nth-child(1){background:#FF5F57}
+.b-dot:nth-child(2){background:#FEBC2E}
+.b-dot:nth-child(3){background:#28C840}
+.b-url{
+  flex:1;background:#fff;border-radius:3px;
+  height:20px;display:flex;align-items:center;
+  padding:0 8px;font-size:10px;color:#999;
+  font-family:monospace;
+}
+.browser-body{padding:0}
+
+/* Mini site inside mockup */
+.mini-nav{
+  background:#fff;border-bottom:1px solid #EDE8DF;
+  padding:10px 16px;display:flex;justify-content:space-between;align-items:center;
+}
+.mini-brand{font-family:'Fraunces',serif;font-size:11px;color:var(--ink)}
+.mini-book{background:var(--sage);color:#fff;padding:4px 8px;font-size:9px;border-radius:2px}
+.mini-hero{
+  padding:24px 16px;
+  background:linear-gradient(135deg,#F0EDE5 0%,#E8E4D8 100%);
+}
+.mini-tag{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--clay);margin-bottom:6px}
+.mini-h{font-family:'Fraunces',serif;font-size:15px;line-height:1.2;margin-bottom:6px;color:var(--ink)}
+.mini-h em{color:var(--sage);font-style:italic}
+.mini-sub{font-size:9px;color:var(--ink-2);margin-bottom:10px;line-height:1.4}
+.mini-cta{display:inline-block;background:var(--ink);color:#fff;padding:5px 10px;font-size:8px;font-weight:500}
+.mini-img{height:60px;background:linear-gradient(135deg,var(--sage),var(--sage-2));margin-top:-80px;width:42%}
+.mini-hero-row{display:flex;justify-content:space-between;align-items:flex-start}
+.mini-services{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);
+  margin:0;
+}
+.mini-svc{background:var(--bg-card);padding:8px 10px}
+.mini-svc-h{font-size:9px;font-weight:500;margin-bottom:3px;color:var(--ink)}
+.mini-svc-p{font-size:8px;color:var(--ink-2);line-height:1.3}
+.mini-label{
+  position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);
+  background:var(--clay-bg);border:1px solid var(--clay-2);
+  padding:4px 12px;font-size:11px;color:var(--clay);
+  white-space:nowrap;font-weight:500;
+}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .browser{transform:none;animation:float-simple 5s ease-in-out infinite}
+  @keyframes float-simple{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .mini-img{display:none}
+}
+@media(max-width:600px){
+  .hero{padding:48px 0 40px}
+  .browser-wrap{display:none}
+}
+
+/* ─── Ticker ─── */
+.ticker{
+  background:var(--sage);padding:14px 0;overflow:hidden;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;animation:tick 30s linear infinite}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker-item{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:0 28px;font-size:12px;color:rgba(255,255,255,.85);
+  letter-spacing:0.06em;text-transform:uppercase;font-weight:500;
+}
+.ticker-dot{width:4px;height:4px;border-radius:50%;background:var(--clay-2);flex-shrink:0}
+
+/* ─── Sections ─── */
+section{padding:88px 0;border-top:1px solid var(--line)}
+.section-head{margin-bottom:56px}
+.section-head h2{font-size:clamp(30px,4vw,50px);margin-top:12px;max-width:22ch}
+
+/* ─── Before/After ─── */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.ba-col label{
+  display:block;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
+  font-weight:500;margin-bottom:12px;
+}
+.ba-col.before label{color:var(--ink-3)}
+.ba-col.after label{color:var(--sage)}
+.ba-browser{border:1px solid var(--line);background:#fff;overflow:hidden}
+.ba-bar{padding:8px 12px;display:flex;align-items:center;gap:8px}
+.ba-col.before .ba-bar{background:#E8EAED}
+.ba-col.after .ba-bar{background:#EDE8DF}
+.ba-dots2{display:flex;gap:4px}
+.ba-dot2{width:8px;height:8px;border-radius:50%}
+.ba-col.before .ba-dot2:nth-child(1){background:#ddd}
+.ba-col.before .ba-dot2:nth-child(2){background:#ddd}
+.ba-col.before .ba-dot2:nth-child(3){background:#ddd}
+.ba-col.after .ba-dot2:nth-child(1){background:#FF5F57}
+.ba-col.after .ba-dot2:nth-child(2){background:#FEBC2E}
+.ba-col.after .ba-dot2:nth-child(3){background:#28C840}
+.ba-url2{flex:1;height:18px;border-radius:2px;padding:0 7px;font-family:monospace;font-size:9px;display:flex;align-items:center;color:#999}
+.ba-col.before .ba-url2{background:#fff;color:#aaa}
+.ba-col.after .ba-url2{background:#fff}
+
+/* Before content */
+.old-site{padding:0}
+.old-nav{background:#1A4A8A;padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
+.old-logo{color:#fff;font-size:11px;font-weight:700;letter-spacing:.03em}
+.old-nav-links{display:flex;gap:10px}
+.old-nav-link{color:rgba(255,255,255,.7);font-size:8px}
+.old-hero{background:#E8EFF8;padding:16px 12px;text-align:center}
+.old-h{font-size:14px;font-weight:700;color:#1A4A8A;margin-bottom:6px;line-height:1.3}
+.old-p{font-size:8px;color:#555;margin-bottom:10px;line-height:1.4}
+.old-btn{background:#1A4A8A;color:#fff;padding:5px 10px;font-size:8px;display:inline-block}
+.old-image{height:50px;background:#C5D5E8;margin-top:8px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#999}
+.old-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid #E0E0E0}
+.old-box{padding:8px;text-align:center;border-right:1px solid #E0E0E0}
+.old-box:last-child{border-right:none}
+.old-box-icon{font-size:14px;margin-bottom:3px}
+.old-box-t{font-size:8px;font-weight:700;color:#333;margin-bottom:2px}
+.old-box-p{font-size:7px;color:#777;line-height:1.3}
+
+/* After content = mini site from hero but flat */
+.new-site .mini-nav{padding:8px 12px}
+.new-site .mini-hero{padding:16px 12px}
+.new-site .mini-h{font-size:14px}
+.ba-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.ba-badge{
+  font-size:10px;padding:4px 10px;border:1px solid var(--line);
+  color:var(--ink-2);background:var(--bg-card);
+}
+.ba-badge.good{border-color:var(--sage-3);color:var(--sage)}
+@media(max-width:700px){.ba-grid{grid-template-columns:1fr}}
+
+/* ─── Deliverables ─── */
+.del-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.del-item{background:var(--bg-card);padding:36px 32px}
+.del-num{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--clay);display:block;margin-bottom:16px}
+.del-item h3{font-family:'Fraunces',serif;font-size:24px;font-weight:400;margin-bottom:10px;line-height:1.2}
+.del-item p{font-size:14px;color:var(--ink-2);line-height:1.55}
+@media(max-width:700px){.del-grid{grid-template-columns:1fr}}
+
+/* ─── Process ─── */
+.proc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line)}
+.proc-step{
+  padding:32px 24px;border-right:1px solid var(--line);
+  position:relative;
+}
+.proc-step:last-child{border-right:none}
+.proc-n{
+  font-family:'Fraunces',serif;font-style:italic;font-size:52px;
+  font-weight:300;color:var(--sage-3);line-height:1;display:block;margin-bottom:16px;
+}
+.proc-step h4{font-family:'Fraunces',serif;font-size:19px;font-weight:400;margin-bottom:8px}
+.proc-step p{font-size:13px;color:var(--ink-2);line-height:1.5}
+.proc-arrow{
+  position:absolute;right:-13px;top:50%;transform:translateY(-50%);
+  width:24px;height:24px;background:var(--bg);border:1px solid var(--line);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--ink-3);z-index:1;
+}
+.proc-step:last-child .proc-arrow{display:none}
+@media(max-width:800px){
+  .proc-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto auto}
+  .proc-step:nth-child(2){border-right:none}
+  .proc-step:nth-child(1),.proc-step:nth-child(2){border-bottom:1px solid var(--line)}
+  .proc-arrow{display:none}
+}
+@media(max-width:500px){.proc-grid{grid-template-columns:1fr}}
+
+/* ─── Pricing ─── */
+.price-section{background:var(--ink);color:var(--bg-card);border-top:none}
+.price-section .eyebrow{color:var(--clay-2)}
+.price-section .serif em{color:var(--clay-2)}
+.price-section h2{color:var(--bg-card)}
+.price-row{
+  display:grid;grid-template-columns:1fr auto;gap:60px;
+  align-items:end;margin-top:48px;padding-top:40px;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.price-includes h4{font-family:'Fraunces',serif;font-size:20px;font-weight:400;margin-bottom:18px;color:var(--bg-card)}
+.price-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 32px}
+.price-list li{
+  font-size:14px;color:rgba(245,240,232,.65);
+  display:flex;align-items:baseline;gap:8px;
+}
+.price-list li::before{content:"—";color:var(--clay-2);font-weight:500}
+.price-note{margin-top:20px;font-size:12px;color:rgba(245,240,232,.35);line-height:1.5}
+.price-big{text-align:right}
+.price-currency{font-size:16px;color:var(--clay-2);font-weight:500;letter-spacing:.1em;margin-bottom:6px}
+.price-number{font-family:'Fraunces',serif;font-size:80px;font-weight:350;line-height:1;letter-spacing:-.03em;color:var(--bg-card)}
+.price-terms{font-size:12px;color:rgba(245,240,232,.4);margin-top:10px}
+@media(max-width:720px){
+  .price-row{grid-template-columns:1fr;gap:36px}
+  .price-list{grid-template-columns:1fr}
+  .price-big{text-align:left}
+  .price-number{font-size:60px}
+}
+
+/* ─── About ─── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-text h2{margin:12px 0 28px}
+.about-text p{font-size:16px;color:var(--ink-2);line-height:1.65;margin-bottom:18px}
+.about-meta{display:flex;gap:32px;flex-wrap:wrap;margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+.meta-item .label{display:block;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px}
+.meta-item .val{font-family:'Fraunces',serif;font-size:16px}
+.about-photo{
+  aspect-ratio:4/5;background:var(--sage-2);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.photo-placeholder{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:64px;color:rgba(255,255,255,.25);
+}
+@media(max-width:800px){
+  .about-grid{grid-template-columns:1fr;gap:40px}
+  .about-photo{max-width:280px;aspect-ratio:1/1}
+  .photo-placeholder{font-size:48px}
+}
+
+/* ─── FAQ ─── */
+.faq-list{max-width:720px;margin-top:40px}
+.faq-item{border-bottom:1px solid var(--line);padding:24px 0}
+.faq-item:first-child{border-top:1px solid var(--line)}
+.faq-q{
+  font-family:'Fraunces',serif;font-size:20px;font-weight:400;
+  margin-bottom:10px;line-height:1.3;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:start;gap:16px;
+}
+.faq-icon{color:var(--ink-3);font-size:18px;flex-shrink:0;margin-top:2px;transition:transform .25s}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{font-size:15px;color:var(--ink-2);line-height:1.6;overflow:hidden;max-height:0;transition:max-height .35s ease,padding .25s}
+.faq-item.open .faq-a{max-height:300px}
+
+/* ─── CTA ─── */
+.cta-section{background:var(--clay-bg);text-align:center;border-top:none}
+.cta-section .eyebrow{margin-bottom:14px}
+.cta-section h2{font-size:clamp(32px,4.5vw,56px);margin:0 auto 20px;max-width:16ch}
+.cta-section p{font-size:17px;color:var(--ink-2);max-width:48ch;margin:0 auto 36px;line-height:1.55}
+.cta-note{margin-top:16px;font-size:12px;color:var(--ink-3)}
+
+/* ─── Footer ─── */
+footer{padding:40px 0;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
+.footer-inner{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+footer a{color:var(--ink-2);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
+/* ─── Floating mobile CTA ─── */
+.mobile-cta{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:var(--ink);padding:16px 20px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.mobile-cta a{
+  display:block;text-align:center;color:var(--bg);
+  font-size:14px;font-weight:500;text-decoration:none;letter-spacing:.02em;
+}
+@media(max-width:600px){.mobile-cta{display:block}}
+
+/* ─── Scroll fade ─── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-up.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <a href="/" class="brand">
+      <span class="brand-top">Brask Digital</span>
+      <span class="brand-name">Samuel Brask</span>
+    </a>
+    <a href="mailto:samuel@samuelbrask.com?subject=Udkast%20til%20vores%20klinik" class="nav-cta">Få et gratis udkast →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow hero-eyebrow">Til private tandklinikker i Danmark</div>
+        <h1 class="serif">En ny hjemmeside. I ser den, <em>inden I betaler</em>.</h1>
+        <p class="hero-lead">Vi bygger et <strong>skræddersyet udkast</strong> til jeres klinik — gratis. Synes I om det, leverer vi det fulde site på syv hverdage til fast pris. Synes I ikke, koster det jer ingenting.</p>
+        <div class="btns">
+          <a href="mailto:samuel@samuelbrask.com?subject=Udkast%20til%20vores%20klinik" class="btn btn-dark">Få et gratis udkast →</a>
+          <a href="#eksempel" class="btn btn-outline">Se eksempel</a>
+        </div>
+        <div class="hero-trust">
+          <span class="trust-pill">12.500 kr fast pris</span>
+          <span class="trust-pill">Levering på 7 dage</span>
+          <span class="trust-pill">CVR-registreret</span>
+          <span class="trust-pill">I ejer alt bagefter</span>
+        </div>
+      </div>
+
+      <!-- Browser mockup -->
+      <div class="browser-wrap">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="b-dots">
+              <span class="b-dot"></span>
+              <span class="b-dot"></span>
+              <span class="b-dot"></span>
+            </div>
+            <div class="b-url">tandlaegen-vest.dk</div>
+          </div>
+          <div class="browser-body">
+            <div class="mini-nav">
+              <span class="mini-brand">Tandlægen Vest</span>
+              <span class="mini-book">Book tid</span>
+            </div>
+            <div class="mini-hero">
+              <div class="mini-hero-row">
+                <div>
+                  <div class="mini-tag">Familieklinik siden 1997</div>
+                  <div class="mini-h">God tandpleje, <em>tæt på jer</em>, i Hellerup.</div>
+                  <div class="mini-sub">Vi behandler hele familien — fra første tand til implantater. Moderne klinik, rolige rammer.</div>
+                  <a href="#" class="mini-cta">Book tid online →</a>
+                </div>
+                <div class="mini-img"></div>
+              </div>
+            </div>
+            <div class="mini-services">
+              <div class="mini-svc">
+                <div class="mini-svc-h">Rutineeftersyn</div>
+                <div class="mini-svc-p">Rens, tjek og forebyggende behandling.</div>
+              </div>
+              <div class="mini-svc">
+                <div class="mini-svc-h">Implantater</div>
+                <div class="mini-svc-p">Permanente løsninger på manglende tænder.</div>
+              </div>
+              <div class="mini-svc">
+                <div class="mini-svc-h">Tandblegning</div>
+                <div class="mini-svc-p">Skånsom blegning med synligt resultat.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span class="mini-label">Eksempel på mockup vi sender gratis</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span class="ticker-dot"></span>7 dages levering</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Fast pris 12.500 kr</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>I ser udkastet først</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>CVR-faktura</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Fuldt ejerskab</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Ingen binding</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Samuel Brask, Birkerød</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>50% ved opstart · 50% ved levering</span>
+    <!-- duplicate for seamless loop -->
+    <span class="ticker-item"><span class="ticker-dot"></span>7 dages levering</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Fast pris 12.500 kr</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>I ser udkastet først</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>CVR-faktura</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Fuldt ejerskab</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Ingen binding</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>Samuel Brask, Birkerød</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>50% ved opstart · 50% ved levering</span>
+  </div>
+</div>
+
+<!-- BEFORE/AFTER -->
+<section id="eksempel">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <div class="eyebrow">Hvad vi ændrer</div>
+      <h2 class="serif">Fra <em>forældet</em> til findbar.</h2>
+      <p style="margin-top:16px;color:var(--ink-2);max-width:56ch;font-size:16px;line-height:1.55">De fleste private tandklinikkers hjemmesider er fra en anden æra. Herunder: hvad en patient oplever på jeres nuværende side, og hvad vi sender som udkast i stedet.</p>
+    </div>
+    <div class="ba-grid fade-up">
+      <div class="ba-col before">
+        <label>Jeres nuværende side — typisk</label>
+        <div class="ba-browser">
+          <div class="ba-bar">
+            <div class="ba-dots2"><span class="ba-dot2"></span><span class="ba-dot2"></span><span class="ba-dot2"></span></div>
+            <div class="ba-url2">tandlaegen-i-byen.dk</div>
+          </div>
+          <div class="old-site">
+            <div class="old-nav">
+              <div class="old-logo">TANDLÆGEN I BYEN ApS</div>
+              <div class="old-nav-links">
+                <span class="old-nav-link">Behandlinger</span>
+                <span class="old-nav-link">Om os</span>
+                <span class="old-nav-link">Kontakt</span>
+              </div>
+            </div>
+            <div class="old-hero">
+              <div class="old-h">Velkommen til Tandlægen i Byen</div>
+              <div class="old-p">Vi tilbyder kvalitetsbehandling i et trygt og roligt miljø. Vi modtager nye patienter og har fokus på forebyggelse.</div>
+              <div class="old-btn">Kontakt os</div>
+              <div class="old-image">[ stock photo ]</div>
+            </div>
+            <div class="old-grid">
+              <div class="old-box">
+                <div class="old-box-icon">🦷</div>
+                <div class="old-box-t">Tandpleje</div>
+                <div class="old-box-p">Eftersyn og rens for hele familien</div>
+              </div>
+              <div class="old-box">
+                <div class="old-box-icon">✨</div>
+                <div class="old-box-t">Kosmetik</div>
+                <div class="old-box-p">Blegning og æstetisk behandling</div>
+              </div>
+              <div class="old-box">
+                <div class="old-box-icon">📋</div>
+                <div class="old-box-t">Implantater</div>
+                <div class="old-box-p">Permanente løsninger</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ba-badges" style="margin-top:12px">
+          <span class="ba-badge">Loader 4–6 sek</span>
+          <span class="ba-badge">Booking skjult</span>
+          <span class="ba-badge">Ikke mobilvenlig</span>
+          <span class="ba-badge">Design ca. 2013</span>
+        </div>
+      </div>
+
+      <div class="ba-col after">
+        <label>Udkastet vi sender jer — gratis</label>
+        <div class="ba-browser">
+          <div class="ba-bar">
+            <div class="ba-dots2"><span class="ba-dot2"></span><span class="ba-dot2"></span><span class="ba-dot2"></span></div>
+            <div class="ba-url2">tandlaegen-i-byen.dk</div>
+          </div>
+          <div class="new-site">
+            <div class="mini-nav" style="padding:8px 12px">
+              <span class="mini-brand">Tandlægen i Byen</span>
+              <span class="mini-book">Book tid</span>
+            </div>
+            <div class="mini-hero" style="padding:16px 12px">
+              <div class="mini-hero-row">
+                <div style="flex:1">
+                  <div class="mini-tag">Familieklinik · Åben lørdag</div>
+                  <div class="mini-h" style="font-size:14px">Tandpleje du kan stole på, <em>nær dig</em>.</div>
+                  <div class="mini-sub">Tre tandlæger. Direkte booking. Plads til nye patienter.</div>
+                  <a href="#" class="mini-cta">Book tid online →</a>
+                </div>
+                <div class="mini-img" style="margin-top:0;width:38%;height:70px"></div>
+              </div>
+            </div>
+            <div class="mini-services">
+              <div class="mini-svc">
+                <div class="mini-svc-h">Eftersyn</div>
+                <div class="mini-svc-p">Inkl. rens og røntgen.</div>
+              </div>
+              <div class="mini-svc">
+                <div class="mini-svc-h">Implantater</div>
+                <div class="mini-svc-p">Fra undersøgelse til krone.</div>
+              </div>
+              <div class="mini-svc">
+                <div class="mini-svc-h">Blegning</div>
+                <div class="mini-svc-p">Synligt efter første gang.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ba-badges" style="margin-top:12px">
+          <span class="ba-badge good">Loader under 1 sek</span>
+          <span class="ba-badge good">Booking på forsiden</span>
+          <span class="ba-badge good">Mobilvenlig</span>
+          <span class="ba-badge good">Design 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DELIVERABLES -->
+<section>
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <div class="eyebrow">Hvad I får</div>
+      <h2 class="serif">En komplet pakke, <em>ikke et byggesæt.</em></h2>
+    </div>
+    <div class="del-grid fade-up">
+      <div class="del-item">
+        <span class="del-num">01</span>
+        <h3>Komplet website, 3–5 sider</h3>
+        <p>Forside, om klinikken, behandlinger, kontakt — og booking-integration hvis I bruger ClinicCare, Booklet eller lignende. Bygget responsivt, virker på alt fra iPhone til stationær.</p>
+      </div>
+      <div class="del-item">
+        <span class="del-num">02</span>
+        <h3>Skræddersyet design</h3>
+        <p>Ikke en WordPress-skabelon med jeres logo klistret på. Designet til at matche klinikkens karakter — om I er familieklinik, kosmetisk specialist eller noget tredje.</p>
+      </div>
+      <div class="del-item">
+        <span class="del-num">03</span>
+        <h3>Hosting og domæne, 12 måneder</h3>
+        <p>Hjemmesiden loader på under ét sekund og kræver ingen vedligeholdelse fra jer. Hosting inkluderet det første år. Bagefter kan I forny for 89 kr/md eller flytte frit.</p>
+      </div>
+      <div class="del-item">
+        <span class="del-num">04</span>
+        <h3>SEO klar fra dag ét</h3>
+        <p>Lokal synlighed bygget ind i strukturen. Meta-tags, schema markup, sitemap — det grundlæggende der betyder noget for Google, når patienter søger "tandlæge [by]".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section>
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <div class="eyebrow">Processen</div>
+      <h2 class="serif">Syv dage. Fire skridt. <em>Ingen overraskelser.</em></h2>
+    </div>
+    <div class="proc-grid fade-up">
+      <div class="proc-step">
+        <span class="proc-n">i.</span>
+        <h4>Udkast</h4>
+        <p>Vi sender et gratis udkast til jeres forside, inden vi spørger om noget. I bruger fem minutter på at se om det rammer.</p>
+        <span class="proc-arrow">→</span>
+      </div>
+      <div class="proc-step">
+        <span class="proc-n">ii.</span>
+        <h4>Samtale</h4>
+        <p>Femten minutter på Zoom. Rammer udkastet, går vi videre. Rammer det ikke, er der ingen faktura.</p>
+        <span class="proc-arrow">→</span>
+      </div>
+      <div class="proc-step">
+        <span class="proc-n">iii.</span>
+        <h4>Byggeri</h4>
+        <p>Vi bygger det fulde site på fem hverdage. I ser en test-version løbende og godkender designet på dag 3.</p>
+        <span class="proc-arrow">→</span>
+      </div>
+      <div class="proc-step">
+        <span class="proc-n">iv.</span>
+        <h4>Levering</h4>
+        <p>Sitet går live på jeres domæne. I ejer kode, design og indhold — ingen binding til os bagefter.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="price-section">
+  <div class="wrap">
+    <div class="eyebrow">Pris</div>
+    <h2 class="serif" style="font-size:clamp(30px,4vw,50px);margin-top:12px;max-width:22ch">Fast pris. <em>Inkluderet alt.</em></h2>
+    <p style="color:rgba(245,240,232,.6);max-width:52ch;margin-top:14px;font-size:16px;line-height:1.55">Ingen timepris, ingen tilkøb. I ved hvad I betaler inden vi starter.</p>
+    <div class="price-row">
+      <div class="price-includes">
+        <h4>Inkluderet</h4>
+        <ul class="price-list">
+          <li>Website 3–5 sider</li>
+          <li>Skræddersyet design</li>
+          <li>Hosting 12 måneder</li>
+          <li>SEO-opsætning</li>
+          <li>Booking-integration</li>
+          <li>Mobil-optimeret</li>
+          <li>Load under 1 sek</li>
+          <li>Fuldt ejerskab</li>
+        </ul>
+        <p class="price-note">CVR-faktura i to dele: 50% ved opstart, 50% ved levering. Betaling via Stripe — kort eller bankoverførsel.</p>
+      </div>
+      <div class="price-big">
+        <div class="price-currency">DKK</div>
+        <div class="price-number">12.500</div>
+        <div class="price-terms">+ moms · Fast pris · Ingen overraskelser</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section>
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-text fade-up">
+        <div class="eyebrow">Hvem står bag</div>
+        <h2 class="serif">Én person, <em>ikke et bureau.</em></h2>
+        <p>Jeg hedder Samuel Brask. Jeg er Customer Engagement Manager hos Intega (del af Visma) og iOS-udvikler ved siden af. Brask Digital er det studio, jeg driver for at bygge hjemmesider til klinikker, der fortjener bedre end et forældet WordPress-tema.</p>
+        <p>Hver leverance er bygget og gennemgået af mig personligt. I taler direkte med den person, der bygger jeres side — ingen projektleder, sælger og udvikler i tre tidszoner.</p>
+        <div class="about-meta">
+          <div class="meta-item">
+            <span class="label">Virksomhed</span>
+            <span class="val">Brask Digital, CVR-reg.</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Baseret i</span>
+            <span class="val">Birkerød, Danmark</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-photo fade-up">
+        <!-- Erstat med dit eget foto: <img src="/1641680012007.jpeg" alt="Samuel Brask" style="width:100%;height:100%;object-fit:cover"> -->
+        <div class="photo-placeholder">SB</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head fade-up">
+      <div class="eyebrow">Spørgsmål</div>
+      <h2 class="serif">FAQ</h2>
+    </div>
+    <div class="faq-list fade-up">
+      <div class="faq-item">
+        <div class="faq-q">Hvorfor sender I et udkast inden I har talt med os?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Fordi det er hurtigere for jer. I bruger fem minutter på at se om vores arbejde rammer klinikken. Rammer det ikke, har I sparet en time på et discovery-møde. Rammer det, har vi sparet jer to ugers frem-og-tilbage.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Hvad sker der hvis vi ikke kan lide udkastet?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Så går vi ikke videre. I skylder ingenting. Udkastet er vores investering — ikke jeres.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Kan vi få ændringer efter levering?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Ja. En revisionsrunde er inkluderet ved levering. Større ændringer aftaler vi separat til fast timepris.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Hvad sker der efter de 12 måneders hosting?<span class="faq-icon">+</span></div>
+        <div class="faq-a">I kan fortsætte med os til 89 kr/md, eller flytte til en hvilken som helst anden host. I ejer alt — kode, design og domæne. Ingen lock-in.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Bruger I AI til at bygge siderne?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Ja. AI er det der gør det muligt at levere skræddersyet på syv dage til fast pris. Men hvert design og hver linje tekst gennemgås og godkendes af mig inden det går live. I får ikke et "AI-website" — I får et professionelt website bygget effektivt.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Vi har allerede en ny hjemmeside. Er det relevant?<span class="faq-icon">+</span></div>
+        <div class="faq-a">Sandsynligvis ikke. Skriv til os igen om to-tre år, når jeres nuværende side begynder at føles forældet. Vi holder kontakten.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" style="padding:100px 0">
+  <div class="wrap">
+    <div class="eyebrow">Kom i gang</div>
+    <h2 class="serif fade-up">Vil I se jeres <em>nye side</em>?</h2>
+    <p class="fade-up">Send mig klinikkens navn og nuværende website. Jeg bygger et gratis udkast på 5 hverdage og sender det til jer — uden forpligtelse.</p>
+    <div class="fade-up">
+      <a href="mailto:samuel@samuelbrask.com?subject=Udkast%20til%20vores%20klinik" class="btn btn-dark" style="font-size:15px;padding:18px 30px">samuel@samuelbrask.com →</a>
+    </div>
+    <p class="cta-note fade-up">Eller book 15 minutter: <a href="https://calendly.com/samuelbrask/15min" style="color:var(--clay);text-decoration:underline">calendly.com/samuelbrask/15min</a></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap footer-inner">
+    <div>© 2026 Brask Digital · CVR-registreret i Danmark</div>
+    <div><a href="/">samuelbrask.com</a> · <a href="mailto:samuel@samuelbrask.com">samuel@samuelbrask.com</a></div>
+  </div>
+</footer>
+
+<!-- FLOATING MOBILE CTA -->
+<div class="mobile-cta">
+  <a href="mailto:samuel@samuelbrask.com?subject=Udkast%20til%20vores%20klinik">Få et gratis udkast → ingen forpligtelse</a>
+</div>
+
+<script>
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if(!isOpen) item.classList.add('open');
+  });
+});
+
+// Hide mobile CTA on scroll up
+let lastY = 0;
+const mCta = document.querySelector('.mobile-cta');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  if(mCta) mCta.style.transform = y < 200 ? 'translateY(100%)' : 'translateY(0)';
+  lastY = y;
+}, {passive:true});
+if(mCta) mCta.style.transition = 'transform .3s ease';
+</script>
+</body>
+</html>
