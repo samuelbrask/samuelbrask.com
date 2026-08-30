@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#072A34">
+<title>Intega Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { display: flex; flex-direction: column; min-height: 100dvh; }
+
+  .wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 20px calc(18px + env(safe-area-inset-bottom));
+    max-width: 620px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  /* topbar med navn og point, står hele dagen */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 20px;
+  }
+  .topbar .who { font-family: var(--display); font-weight: 700; font-size: 16px; }
+  .topbar .day { font-size: 11px; color: var(--ink-faint); margin-top: 2px; letter-spacing: .04em; }
+  .topbar .pts { text-align: right; }
+  .topbar .pts b { font-family: var(--display); font-size: 22px; color: var(--mint-bright); display: block; line-height: 1; }
+  .topbar .pts span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+
+  .view { display: none; flex: 1; flex-direction: column; }
+  .view.on { display: flex; }
+
+  /* ---- join ---- */
+  .brandmark { font-family: var(--display); font-weight: 800; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--mint-bright); }
+  #v-join h1 { font-size: 34px; line-height: 1.08; margin: 14px 0 8px; }
+  #v-join p.lede { color: var(--ink-dim); font-size: 16px; margin: 0 0 30px; line-height: 1.5; }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; font-family: var(--display); font-weight: 600; }
+  #code { text-transform: uppercase; letter-spacing: .3em; font-family: var(--display); font-weight: 700; font-size: 24px; }
+  .joinfoot { margin-top: auto; padding-top: 24px; color: var(--ink-faint); font-size: 12px; line-height: 1.6; }
+
+  /* ---- venteskærm ---- */
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
+  .center h2 { font-size: 26px; }
+  .center p { color: var(--ink-dim); margin: 0; font-size: 16px; max-width: 34ch; line-height: 1.5; }
+
+  .pulse { width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--mint-bright); animation: spin 1.1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---- spørgsmål ---- */
+  .qhead { margin-bottom: 16px; }
+  .qhead .meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .qhead .meta .rnd { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mint-bright); font-family: var(--display); font-weight: 600; }
+  .qhead .meta .cnt { font-size: 11px; color: var(--ink-faint); letter-spacing: .1em; }
+  .qhead h2 { font-size: 21px; line-height: 1.3; }
+
+  .timerbar { height: 4px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
+  .timerbar i { display: block; height: 100%; background: var(--orange); width: 100%; transform-origin: left; }
+
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; flex: 1; align-content: stretch; }
+  .ans {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 118px;
+    padding: 15px 15px 16px;
+    border-radius: var(--radius);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: left;
+    line-height: 1.32;
+    transition: transform .1s ease, opacity .18s ease;
+  }
+  .ans:active { transform: scale(.975); }
+  .ans[data-i="0"] { background: var(--a0); }
+  .ans[data-i="1"] { background: var(--a1); }
+  .ans[data-i="2"] { background: var(--a2); }
+  .ans[data-i="3"] { background: var(--a3); }
+  .ans.dim { opacity: .28; }
+  .ans.picked { outline: 3px solid #fff; outline-offset: 2px; }
+
+  @media (min-width: 700px) {
+    .answers { gap: 14px; }
+    .ans { min-height: 130px; font-size: 17px; }
+    .qhead h2 { font-size: 26px; }
+  }
+
+  /* ---- resultat ---- */
+  .verdict { font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; }
+  .verdict.ok { color: var(--mint-bright); }
+  .verdict.no { color: #FF9E7A; }
+  .gain { font-family: var(--display); font-size: 17px; color: var(--ink); }
+  .rankline { color: var(--ink-dim); font-size: 15px; }
+
+  .foot { text-align: center; color: var(--ink-faint); font-size: 11px; padding-top: 20px; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar hidden" id="topbar">
+    <div>
+      <div class="who" id="tbName">-</div>
+      <div class="day" id="tbDay"></div>
+    </div>
+    <div class="pts">
+      <b id="tbPts">0</b>
+      <span>point</span>
+    </div>
+  </div>
+
+  <!-- ============ LOGIN ============ -->
+  <section class="view on" id="v-join">
+    <div class="brandmark">Intega</div>
+    <h1>Dagens quiz</h1>
+    <p class="lede">Skriv koden fra storskærmen og vælg et kaldenavn. Lad fanen stå åben resten af dagen, så tæller pointene med hele vejen.</p>
+
+    <div class="stack">
+      <div>
+        <div class="label">Kode</div>
+        <input class="field" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD" inputmode="text">
+      </div>
+      <div>
+        <div class="label">Kaldenavn</div>
+        <input class="field" id="nick" maxlength="18" autocomplete="off" spellcheck="false" placeholder="Vælg frit">
+      </div>
+      <button class="btn" id="joinBtn">Kom med</button>
+      <div class="err" id="joinErr"></div>
+    </div>
+
+    <div class="joinfoot">
+      Kaldenavnet vises på storskærmen. Der gemmes ikke andet om dig end navn og point, og det slettes efter kurset.
+    </div>
+  </section>
+
+  <!-- ============ VENT ============ -->
+  <section class="view" id="v-wait">
+    <div class="center">
+      <div class="pulse"></div>
+      <h2 id="waitTitle">Du er med</h2>
+      <p id="waitText">Kig op på storskærmen. Spørgsmålet kommer her, når runden starter.</p>
+    </div>
+  </section>
+
+  <!-- ============ SPØRGSMÅL ============ -->
+  <section class="view" id="v-q">
+    <div class="qhead">
+      <div class="meta">
+        <span class="rnd" id="qRound"></span>
+        <span class="cnt" id="qCount"></span>
+      </div>
+      <h2 id="qText"></h2>
+    </div>
+    <div class="timerbar"><i id="qBar"></i></div>
+    <div class="answers" id="answers"></div>
+  </section>
+
+  <!-- ============ SVAR SENDT ============ -->
+  <section class="view" id="v-sent">
+    <div class="center">
+      <div class="pulse"></div>
+      <h2>Svar sendt</h2>
+      <p>Hurtige svar giver flere point. Vent på storskærmen.</p>
+    </div>
+  </section>
+
+  <!-- ============ FACIT ============ -->
+  <section class="view" id="v-reveal">
+    <div class="center">
+      <div class="verdict" id="verdict">Rigtigt</div>
+      <div class="gain" id="gain"></div>
+      <div class="rankline" id="rankline"></div>
+    </div>
+  </section>
+
+  <div class="foot" id="foot"></div>
+</div>
+
+<div class="status-dot" id="dot"><i></i><span id="dotText">forbinder</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var CFG = window.QUIZ_CONFIG || {};
+  var LS = "intega_quiz_player_v2";
+
+  var sb = null, ch = null;
+  var me = null;          // { gameId, playerId, code, nickname, day }
+  var curKey = null;      // qkey for det spørgsmål, der vises nu
+  var answered = {};      // qkey -> valgt svar
+  var t0 = 0, tick = null;
+  var lastTotal = 0;
+
+  function $(id) { return document.getElementById(id); }
+  function view(id) {
+    var v = document.querySelectorAll(".view");
+    for (var i = 0; i < v.length; i++) v[i].classList.toggle("on", v[i].id === id);
+  }
+  function dot(live, text) {
+    $("dot").classList.toggle("live", !!live);
+    $("dotText").textContent = text;
+  }
+
+  /* ---------- opsætningstjek ---------- */
+  if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("INDSAET") === 0) {
+    $("joinErr").textContent = "Quizzen er ikke sat op endnu. config.js mangler Supabase-nøglerne.";
+    $("joinBtn").disabled = true;
+  } else {
+    sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
+      realtime: { params: { eventsPerSecond: 20 } }
+    });
+  }
+
+  $("foot").textContent = CFG.EVENT_NAME || "";
+
+  /* ---------- kode fra QR ---------- */
+  var p = new URLSearchParams(location.search);
+  if (p.get("kode")) $("code").value = p.get("kode").toUpperCase().slice(0, 4);
+
+  /* ---------- login ---------- */
+  $("code").addEventListener("input", function () {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+  });
+  $("nick").addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
+  $("code").addEventListener("keydown", function (e) { if (e.key === "Enter") $("nick").focus(); });
+  $("joinBtn").addEventListener("click", join);
+
+  function join() {
+    var code = $("code").value.trim().toUpperCase();
+    var nick = $("nick").value.trim().replace(/\s+/g, " ");
+    $("joinErr").textContent = "";
+
+    if (code.length !== 4) { $("joinErr").textContent = "Koden er fire tegn. Den står på storskærmen."; return; }
+    if (nick.length < 2) { $("joinErr").textContent = "Skriv et kaldenavn på mindst to tegn."; return; }
+
+    $("joinBtn").disabled = true;
+    $("joinBtn").textContent = "Et øjeblik";
+
+    sb.from("quiz_games").select("id,label,state").eq("code", code).maybeSingle()
+      .then(function (r) {
+        if (r.error) throw r.error;
+        if (!r.data) { fail("Den kode findes ikke. Tjek storskærmen."); return null; }
+        var g = r.data;
+        return sb.from("quiz_players")
+          .insert({ game_id: g.id, nickname: nick })
+          .select("id,total")
+          .single()
+          .then(function (r2) {
+            if (r2.error) {
+              if (String(r2.error.code) === "23505") { fail("Navnet er taget. Vælg et andet."); return null; }
+              throw r2.error;
+            }
+            me = { gameId: g.id, playerId: r2.data.id, code: code, nickname: nick, day: g.label || "" };
+            localStorage.setItem(LS, JSON.stringify(me));
+            enterGame(g.state, 0);
+          });
+      })
+      .catch(function (e) {
+        console.error(e);
+        fail("Kunne ikke få forbindelse. Tjek nettet og prøv igen.");
+      });
+  }
+
+  function fail(msg) {
+    $("joinErr").textContent = msg;
+    $("joinBtn").disabled = false;
+    $("joinBtn").textContent = "Kom med";
+  }
+
+  /* ---------- automatisk tilbage i spillet ---------- */
+  function resume() {
+    var raw = localStorage.getItem(LS);
+    if (!raw || !sb) return;
+    var saved;
+    try { saved = JSON.parse(raw); } catch (e) { return; }
+    if (!saved || !saved.playerId) return;
+
+    dot(false, "henter din plads");
+
+    sb.from("quiz_players").select("id,total,game_id").eq("id", saved.playerId).maybeSingle()
+      .then(function (r) {
+        if (r.error || !r.data) { localStorage.removeItem(LS); dot(false, "ikke forbundet"); return; }
+        me = saved;
+        lastTotal = r.data.total || 0;
+        return sb.from("quiz_games").select("state,label").eq("id", saved.gameId).single()
+          .then(function (g) {
+            if (g.data && g.data.label) me.day = g.data.label;
+            enterGame(g.data ? g.data.state : { phase: "lobby" }, r.data.total || 0);
+          });
+      })
+      .catch(function () { dot(false, "ikke forbundet"); });
+  }
+
+  /* ---------- i spillet ---------- */
+  function enterGame(state, total) {
+    $("topbar").classList.remove("hidden");
+    $("tbName").textContent = me.nickname;
+    $("tbDay").textContent = me.day || "";
+    setPoints(total || 0, false);
+    subscribe();
+    render(state || { phase: "lobby" });
+  }
+
+  function setPoints(n, animate) {
+    lastTotal = n;
+    $("tbPts").textContent = n;
+    if (animate) {
+      $("tbPts").animate(
+        [{ transform: "scale(1)" }, { transform: "scale(1.22)" }, { transform: "scale(1)" }],
+        { duration: 420, easing: "ease-out" }
+      );
+    }
+  }
+
+  function subscribe() {
+    if (ch) sb.removeChannel(ch);
+    ch = sb.channel("p:" + me.gameId)
+      .on("postgres_changes",
+        { event: "UPDATE", schema: "public", table: "quiz_games", filter: "id=eq." + me.gameId },
+        function (m) { render(m.new.state); })
+      .on("postgres_changes",
+        { event: "UPDATE", schema: "public", table: "quiz_players", filter: "id=eq." + me.playerId },
+        function (m) { setPoints(m.new.total, true); })
+      .subscribe(function (st) {
+        dot(st === "SUBSCRIBED", st === "SUBSCRIBED" ? "forbundet" : "forbinder");
+        if (st === "SUBSCRIBED") pull();
+      });
+
+    // Hvis fanen har ligget i baggrunden, kan en besked være gået tabt.
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) pull();
+    });
+    setInterval(function () { if (!document.hidden) pull(); }, 15000);
+  }
+
+  // Henter sandheden fra databasen. Bruges som sikkerhedsnet.
+  function pull() {
+    if (!me) return;
+    sb.from("quiz_games").select("state").eq("id", me.gameId).single().then(function (r) {
+      if (r.data) render(r.data.state);
+    });
+    sb.from("quiz_players").select("total").eq("id", me.playerId).single().then(function (r) {
+      if (r.data && r.data.total !== lastTotal) setPoints(r.data.total, true);
+    });
+  }
+
+  /* ---------- tegning ---------- */
+  function render(s) {
+    if (!s) return;
+
+    if (s.phase === "question") {
+      if (curKey !== s.qkey) {
+        curKey = s.qkey;
+        drawQuestion(s);
+      } else if (answered[s.qkey] === undefined) {
+        view("v-q");
+      }
+      return;
+    }
+
+    clearTick();
+
+    if (s.phase === "reveal" && s.qkey) {
+      drawReveal(s);
+      return;
+    }
+
+    // lobby, pause, stilling: deltageren venter
+    curKey = null;
+    $("waitTitle").textContent = s.phase === "scoreboard" ? "Stillingen er på storskærmen" : "Du er med";
+    $("waitText").textContent = s.phase === "scoreboard"
+      ? "Kig op. Næste runde starter herinde."
+      : "Kig op på storskærmen. Spørgsmålet kommer her, når runden starter.";
+    view("v-wait");
+  }
+
+  function drawQuestion(s) {
+    $("qRound").textContent = s.roundTitle || "";
+    $("qCount").textContent = (s.qi + 1) + " af " + s.qn;
+    $("qText").textContent = s.q;
+
+    var box = $("answers");
+    box.innerHTML = "";
+    (s.a || []).forEach(function (txt, i) {
+      var b = document.createElement("button");
+      b.className = "ans";
+      b.setAttribute("data-i", i);
+      b.innerHTML = shape(i) + '<span>' + esc(txt) + '</span>';
+      b.addEventListener("click", function () { pick(i, s); });
+      box.appendChild(b);
+    });
+
+    view("v-q");
+
+    // Tiden tælles fra det øjeblik, skærmen får spørgsmålet.
+    t0 = Date.now();
+    var lim = (s.seconds || 20) * 1000;
+    clearTick();
+    tick = setInterval(function () {
+      var left = Math.max(0, 1 - (Date.now() - t0) / lim);
+      $("qBar").style.transform = "scaleX(" + left + ")";
+      if (left <= 0) clearTick();
+    }, 80);
+  }
+
+  function pick(i, s) {
+    if (answered[s.qkey] !== undefined) return;
+    answered[s.qkey] = i;
+    var ms = Date.now() - t0;
+    clearTick();
+
+    var nodes = document.querySelectorAll(".ans");
+    for (var k = 0; k < nodes.length; k++) {
+      nodes[k].classList.add(k === i ? "picked" : "dim");
+      nodes[k].disabled = true;
+    }
+
+    sb.from("quiz_answers").insert({
+      game_id: me.gameId,
+      player_id: me.playerId,
+      qkey: s.qkey,
+      choice: i,
+      ms: Math.min(ms, (s.seconds || 20) * 1000)
+    }).then(function () {});
+
+    setTimeout(function () { view("v-sent"); }, 340);
+  }
+
+  function drawReveal(s) {
+    var mine = answered[s.qkey];
+    var ok = mine !== undefined && mine === s.correct;
+
+    if (mine === undefined) {
+      $("verdict").textContent = "Ingen svar";
+      $("verdict").className = "verdict no";
+      $("gain").textContent = "Du nåede ikke at svare.";
+    } else {
+      $("verdict").textContent = ok ? "Rigtigt" : "Forkert";
+      $("verdict").className = "verdict " + (ok ? "ok" : "no");
+      $("gain").textContent = ok ? "" : "Det rigtige var " + shapeName(s.correct) + ".";
+    }
+    $("rankline").textContent = "";
+
+    // Point kommer via realtidsopdatering af egen række lige efter.
+    setTimeout(function () {
+      sb.from("quiz_players").select("total,last_gain,last_key").eq("id", me.playerId).single()
+        .then(function (r) {
+          if (!r.data) return;
+          setPoints(r.data.total, r.data.total !== lastTotal);
+          if (r.data.last_key === s.qkey && r.data.last_gain > 0) {
+            $("gain").textContent = "+" + r.data.last_gain + " point";
+          }
+        });
+    }, 700);
+
+    view("v-reveal");
+  }
+
+  function clearTick() { if (tick) { clearInterval(tick); tick = null; } }
+
+  function shape(i) {
+    var c = "#fff";
+    if (i === 0) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 3 22 21H2Z" fill="' + c + '"/></svg>';
+    if (i === 1) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 2 22 12 12 22 2 12Z" fill="' + c + '"/></svg>';
+    if (i === 2) return '<svg class="shape" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="' + c + '"/></svg>';
+    return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="' + c + '"/></svg>';
+  }
+  function shapeName(i) { return ["trekanten", "romben", "cirklen", "firkanten"][i] || "?"; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+
+  resume();
+})();
+</script>
+</body>
+</html>
