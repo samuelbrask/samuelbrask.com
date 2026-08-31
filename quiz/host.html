@@ -6,162 +6,283 @@
 <title>Intega Quiz · værtsskærm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  body { height: 100vh; overflow: hidden; }
-  .stage { height: 100vh; display: flex; flex-direction: column; padding: 34px 46px 30px; }
+  /* Siden må scrolle. Enkelte skærme låser sig selv til vinduets højde. */
+  .stage { min-height: 100vh; display: flex; flex-direction: column; padding: 26px 42px 28px; }
+  .stage.locked { height: 100vh; overflow: hidden; }
 
+  /* ---------- topbjælke ---------- */
   .head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line); margin-bottom: 30px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line);
+    margin-bottom: 26px; flex: 0 0 auto;
   }
-  .head .left { display: flex; align-items: baseline; gap: 18px; }
-  .head h1 { font-size: 26px; }
-  .head .day { font-size: 13px; color: var(--ink-faint); letter-spacing: .06em; }
-  .head .right { display: flex; align-items: center; gap: 22px; }
+  .head .left { display: flex; align-items: baseline; gap: 16px; min-width: 0; }
+  .head h1 { font-size: 22px; white-space: nowrap; }
+  .head .day {
+    font-size: 12px; color: var(--mint-soft); letter-spacing: .05em;
+    background: rgba(42,200,165,.13); border: 1px solid rgba(42,200,165,.28);
+    padding: 4px 12px; border-radius: 99px; white-space: nowrap;
+  }
+  .head .right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
   .pill {
-    font-family: var(--display); font-weight: 700; font-size: 14px;
-    background: rgba(255,255,255,.08); border: 1px solid var(--line);
-    padding: 7px 15px; border-radius: 99px;
+    font-family: var(--display); font-weight: 700; font-size: 13px;
+    background: var(--glass); border: 1px solid var(--line);
+    padding: 8px 15px; border-radius: 99px; white-space: nowrap;
   }
+  .pill b { color: var(--mint); }
 
   .view { display: none; flex: 1; min-height: 0; flex-direction: column; }
   .view.on { display: flex; }
 
-  /* ---------- opstart ---------- */
-  #v-start .box { max-width: 620px; margin: auto; text-align: left; }
-  #v-start h2 { font-size: 40px; margin-bottom: 10px; }
-  #v-start p { color: var(--ink-dim); font-size: 17px; line-height: 1.55; margin: 0 0 30px; }
-  .daylist { display: flex; flex-direction: column; gap: 10px; }
-  .daybtn {
-    background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--ink);
-    font-family: var(--display); font-weight: 600; font-size: 19px; text-align: left;
-    padding: 18px 22px; border-radius: var(--radius); transition: background .12s ease;
+  /* ================= FORSIDE ================= */
+  #v-start { justify-content: flex-start; }
+  .hero { max-width: 1080px; margin: 0 auto; width: 100%; padding-bottom: 60px; }
+  .hero-top { margin-bottom: 44px; }
+  .hero h2 { font-size: clamp(38px, 5.5vw, 62px); margin: 12px 0 14px; }
+  .hero h2 em { font-style: italic; color: var(--mint-soft); font-family: var(--serif); font-weight: 400; }
+  .hero p.lede { color: var(--ink-dim); font-size: 17px; max-width: 56ch; margin: 0; }
+
+  .sect-label {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--display); font-size: 11px; font-weight: 700;
+    letter-spacing: .2em; text-transform: uppercase; color: var(--ink-faint);
+    margin: 0 0 16px;
   }
-  .daybtn:hover { background: rgba(255,255,255,.13); }
-  .resume { margin-bottom: 26px; padding: 20px 22px; border-radius: var(--radius); background: rgba(43,169,138,.14); border: 1px solid rgba(99,214,180,.34); }
-  .resume b { font-family: var(--display); font-size: 19px; display: block; margin-bottom: 4px; }
-  .resume p { color: var(--ink-dim); font-size: 14px; margin: 0 0 14px; }
+  .sect-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
-  /* ---------- lobby ---------- */
-  .lobby { flex: 1; display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 46px; min-height: 0; }
-  .joinbox h2 { font-size: 21px; color: var(--ink-dim); font-weight: 600; margin-bottom: 6px; }
-  .joinurl { font-family: var(--display); font-weight: 700; font-size: 40px; color: var(--mint-bright); margin-bottom: 26px; word-break: break-all; }
-  .codebox { display: inline-block; padding: 18px 34px; border-radius: 18px; background: var(--orange); }
-  .codebox span { display: block; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.8); margin-bottom: 4px; }
-  .codebox b { font-family: var(--display); font-weight: 800; font-size: 62px; letter-spacing: .12em; line-height: 1; color: #fff; }
+  .daygrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 44px; }
 
-  .players { margin-top: 34px; min-height: 0; overflow: hidden; }
-  .players .n { font-family: var(--display); font-size: 15px; color: var(--ink-dim); margin-bottom: 12px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    background: rgba(255,255,255,.09); border: 1px solid var(--line);
-    padding: 7px 14px; border-radius: 99px; font-size: 15px;
-    animation: pop .28s ease-out;
-  }
-  @keyframes pop { from { transform: scale(.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-  .qrwrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .qrcard { background: #fff; padding: 16px; border-radius: 18px; line-height: 0; }
-  .qrwrap p { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 0; line-height: 1.5; }
-
-  .rounds { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px; }
-  .roundbtn {
-    background: rgba(255,255,255,.06); border: 1px solid var(--line); color: var(--ink);
-    font-family: var(--display); font-weight: 600; font-size: 15px;
-    padding: 12px 18px; border-radius: 11px;
-  }
-  .roundbtn:hover { background: rgba(255,255,255,.14); }
-  .roundbtn.done { color: var(--ink-faint); }
-  .roundbtn.done::after { content: " ✓"; color: var(--mint-bright); }
-
-  /* ---------- spørgsmål ---------- */
-  .qtop { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
-  .qtop .rnd { font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: .14em; text-transform: uppercase; color: var(--mint-bright); }
-  .qtop .cnt { font-size: 14px; color: var(--ink-faint); letter-spacing: .1em; }
-  #qText { font-size: 46px; line-height: 1.16; margin-bottom: 26px; max-width: 20ch; }
-
-  .qmeter { display: flex; align-items: center; gap: 22px; margin-bottom: 26px; }
-  .ring { position: relative; width: 82px; height: 82px; flex: 0 0 82px; }
-  .ring svg { transform: rotate(-90deg); }
-  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-size: 28px; }
-  .answered { font-family: var(--display); font-size: 17px; color: var(--ink-dim); }
-  .answered b { color: var(--ink); font-size: 26px; }
-
-  .grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 16px; flex: 1; min-height: 0; }
-  .opt {
-    display: flex; align-items: center; gap: 16px;
-    padding: 22px 24px; border-radius: var(--radius); color: #fff;
-    font-size: 25px; font-weight: 600; line-height: 1.25;
+  .daycard {
     position: relative; overflow: hidden;
-    transition: opacity .3s ease, transform .3s ease;
+    padding: 22px 24px 20px;
+    border-radius: var(--r-lg);
+    background: var(--glass);
+    border: 1px solid var(--line);
+    transition: transform .22s var(--ease), border-color .22s, background .22s;
+    animation: rise .5s var(--ease) both;
   }
-  .opt[data-i="0"] { background: var(--a0); }
-  .opt[data-i="1"] { background: var(--a1); }
-  .opt[data-i="2"] { background: var(--a2); }
-  .opt[data-i="3"] { background: var(--a3); }
-  .opt .shape { width: 30px; height: 30px; flex: 0 0 30px; }
-  .opt .tally {
-    margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 26px;
-    opacity: 0; transition: opacity .3s ease;
+  .daycard:hover { transform: translateY(-3px); border-color: rgba(166,237,222,.32); background: var(--glass-lift); }
+  .daycard::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--line); transition: background .22s;
   }
-  .opt .fill { position: absolute; left: 0; bottom: 0; height: 5px; background: rgba(255,255,255,.55); width: 0; transition: width .5s ease; }
-  .opt.faded { opacity: .2; transform: scale(.97); }
-  .opt.right { outline: 4px solid #fff; outline-offset: -4px; }
-  .revealed .opt .tally { opacity: 1; }
+  .daycard.live::before { background: linear-gradient(180deg, var(--mint), var(--orange)); }
+  .daycard.test { border-style: dashed; }
 
-  /* ---------- stilling ---------- */
-  #v-board h2 { font-size: 34px; margin-bottom: 22px; }
-  .board { display: flex; flex-direction: column; gap: 9px; flex: 1; min-height: 0; overflow: hidden; }
-  .row {
-    display: flex; align-items: center; gap: 18px;
-    padding: 13px 22px; border-radius: 12px;
-    background: rgba(255,255,255,.06); border: 1px solid var(--line);
-    animation: slide .4s ease-out both;
+  .daycard h3 { font-size: 19px; margin-bottom: 8px; }
+  .daycard .state { font-size: 13px; color: var(--ink-dim); min-height: 22px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .daycard .code {
+    font-family: var(--display); font-weight: 800; letter-spacing: .12em;
+    color: var(--orange); font-size: 15px;
   }
-  @keyframes slide { from { transform: translateX(-14px); opacity: 0; } to { transform: none; opacity: 1; } }
-  .row.top { background: rgba(238,118,35,.2); border-color: rgba(238,118,35,.5); }
-  .row .pos { font-family: var(--display); font-weight: 800; font-size: 21px; width: 40px; color: var(--ink-dim); }
-  .row.top .pos { color: var(--orange); }
-  .row .name { font-family: var(--display); font-weight: 600; font-size: 21px; flex: 1; }
-  .row .gain { font-size: 15px; color: var(--mint-bright); font-family: var(--display); }
-  .row .tot { font-family: var(--display); font-weight: 800; font-size: 24px; min-width: 96px; text-align: right; }
-
-  .actions { display: flex; gap: 12px; margin-top: 22px; }
+  .daycard .acts { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
   .setupwarn {
-    background: rgba(238,118,35,.16); border: 1px solid rgba(238,118,35,.5);
-    padding: 18px 22px; border-radius: var(--radius); margin-bottom: 24px; font-size: 15px; line-height: 1.6;
+    background: rgba(255,97,26,.14); border: 1px solid rgba(255,97,26,.42);
+    padding: 18px 22px; border-radius: var(--r); margin-bottom: 30px; font-size: 15px; line-height: 1.6;
   }
-  .setupwarn code { background: rgba(0,0,0,.3); padding: 2px 7px; border-radius: 5px; }
+  .setupwarn code { background: rgba(0,0,0,.3); padding: 2px 7px; border-radius: 5px; font-size: 13px; }
 
-  .keys { position: fixed; right: 18px; bottom: 12px; font-size: 11px; color: var(--ink-faint); letter-spacing: .04em; }
+  /* ================= LOBBY ================= */
+  .lobby { flex: 1; display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 44px; min-height: 0; }
+  .joinbox { display: flex; flex-direction: column; min-height: 0; }
+  .joinbox .lede { color: var(--ink-dim); font-size: 15px; margin: 0 0 6px; }
+  .joinurl {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(28px, 3.4vw, 46px); color: var(--mint-soft);
+    margin-bottom: 22px; word-break: break-all; line-height: 1.05;
+  }
+  .codebox {
+    display: inline-flex; flex-direction: column; align-items: flex-start;
+    padding: 16px 32px; border-radius: 20px;
+    background: linear-gradient(135deg, var(--orange), var(--coral));
+    box-shadow: 0 16px 40px -18px rgba(255,97,26,.9);
+    align-self: flex-start;
+  }
+  .codebox span { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(255,255,255,.85); font-family: var(--display); font-weight: 700; }
+  .codebox b { font-family: var(--display); font-weight: 800; font-size: 56px; letter-spacing: .14em; line-height: 1.06; color: #fff; }
+
+  .rounds { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+  .roundbtn {
+    background: var(--glass); border: 1px solid var(--line);
+    font-family: var(--display); font-weight: 600; font-size: 14px;
+    padding: 12px 18px; border-radius: 12px;
+    transition: background .16s, border-color .16s, transform .16s var(--ease);
+  }
+  .roundbtn:hover { background: var(--glass-lift); border-color: var(--mint); transform: translateY(-2px); }
+  .roundbtn.done { color: var(--ink-faint); border-style: dashed; }
+  .roundbtn.done::after { content: " ✓"; color: var(--mint); }
+
+  .players { margin-top: 30px; min-height: 0; overflow-y: auto; padding-right: 6px; }
+  .players .n { font-family: var(--display); font-size: 13px; color: var(--ink-dim); margin-bottom: 12px; letter-spacing: .04em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--glass); border: 1px solid var(--line);
+    padding: 7px 15px; border-radius: 99px; font-size: 14px;
+    animation: pop .42s var(--ease) both;
+  }
+  @keyframes pop { from { transform: scale(.6) translateY(8px); opacity: 0; } }
+
+  .qrwrap { display: flex; flex-direction: column; align-items: center; gap: 14px; align-self: start; }
+  .qrcard { background: #fff; padding: 15px; border-radius: 20px; line-height: 0; box-shadow: 0 20px 46px -22px rgba(0,0,0,.8); }
+  .qrwrap p { font-size: 12px; color: var(--ink-faint); text-align: center; margin: 0; line-height: 1.55; }
+
+  /* ================= SPØRGSMÅL ================= */
+  .qtop { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex: 0 0 auto; }
+  #qText {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(30px, 4.2vw, 54px); line-height: 1.14;
+    margin-bottom: 22px; max-width: 22ch; flex: 0 0 auto;
+    animation: rise .5s var(--ease) both;
+  }
+
+  .qmeter { display: flex; align-items: center; gap: 24px; margin-bottom: 22px; flex: 0 0 auto; }
+  .ring { position: relative; width: 78px; height: 78px; flex: 0 0 78px; }
+  .ring svg { transform: rotate(-90deg); display: block; }
+  .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 26px; }
+  .ring.low b { color: var(--orange); }
+  .ring.low { animation: beat .9s ease-in-out infinite; }
+  @keyframes beat { 50% { transform: scale(1.07); } }
+
+  .answered { font-family: var(--display); font-size: 15px; color: var(--ink-dim); }
+  .answered b { color: var(--ink); font-size: 30px; font-weight: 800; }
+  .meterbar { flex: 1; height: 6px; background: rgba(255,255,255,.09); border-radius: 99px; overflow: hidden; max-width: 340px; }
+  .meterbar i { display: block; height: 100%; width: 0; background: var(--mint); border-radius: 99px; transition: width .45s var(--ease); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 14px; flex: 1; min-height: 0; }
+  .opt {
+    display: flex; align-items: center; gap: 18px;
+    padding: 20px 26px; border-radius: var(--r-lg); color: #fff;
+    font-size: clamp(17px, 1.7vw, 25px); font-weight: 600; line-height: 1.25;
+    position: relative; overflow: hidden;
+    transition: opacity .45s var(--ease), transform .45s var(--ease), filter .45s;
+    animation: rise .5s var(--ease) both;
+  }
+  .opt[data-i="0"] { background: var(--a0); animation-delay: .04s; }
+  .opt[data-i="1"] { background: var(--a1); animation-delay: .10s; }
+  .opt[data-i="2"] { background: var(--a2); animation-delay: .16s; }
+  .opt[data-i="3"] { background: var(--a3); animation-delay: .22s; }
+  .opt .shape { width: 28px; height: 28px; flex: 0 0 28px; }
+  .opt .tally {
+    margin-left: auto; font-family: var(--display); font-weight: 800; font-size: 28px;
+    opacity: 0; transform: translateX(10px);
+    transition: opacity .4s var(--ease) .1s, transform .4s var(--ease) .1s;
+  }
+  .opt .fill {
+    position: absolute; left: 0; bottom: 0; height: 6px;
+    background: rgba(255,255,255,.62); width: 0;
+    transition: width .8s var(--ease) .15s;
+  }
+  .revealed .opt .tally { opacity: 1; transform: none; }
+  .opt.faded { opacity: .16; transform: scale(.965); filter: saturate(.4); }
+  .opt.right { box-shadow: 0 0 0 4px #fff inset, 0 18px 46px -18px rgba(255,255,255,.5); animation: right-pulse .7s var(--ease); }
+  @keyframes right-pulse { 40% { transform: scale(1.035); } }
+
+  /* ================= STILLING ================= */
+  #v-board .boardhead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; flex: 0 0 auto; }
+  #v-board h2 { font-size: clamp(26px, 3vw, 40px); }
+  #v-board h2 em { font-family: var(--serif); font-style: italic; color: var(--mint-soft); font-weight: 400; }
+
+  .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; align-items: end; flex: 0 0 auto; }
+  .pod {
+    border-radius: var(--r-lg); padding: 20px 18px; text-align: center;
+    background: var(--glass); border: 1px solid var(--line);
+    animation: podrise .6s var(--ease) both;
+  }
+  @keyframes podrise { from { opacity: 0; transform: translateY(26px) scale(.96); } }
+  .pod .medal { font-family: var(--display); font-weight: 800; font-size: 13px; letter-spacing: .16em; color: var(--ink-faint); }
+  .pod .nm { font-family: var(--display); font-weight: 700; font-size: 20px; margin: 8px 0 4px; overflow-wrap: anywhere; }
+  .pod .sc { font-family: var(--display); font-weight: 800; font-size: 28px; color: var(--mint); }
+  .pod.p1 {
+    background: linear-gradient(150deg, rgba(255,97,26,.28), rgba(255,97,26,.06));
+    border-color: rgba(255,97,26,.55); padding: 30px 18px;
+  }
+  .pod.p1 .medal { color: var(--orange); }
+  .pod.p1 .nm { font-size: 26px; }
+  .pod.p1 .sc { font-size: 38px; color: var(--cream); }
+
+  .podium.solo { margin-block: auto; }
+  .board { display: flex; flex-direction: column; gap: 7px; flex: 1; min-height: 0; overflow-y: auto; padding-right: 6px; }
+  .row {
+    display: flex; align-items: center; gap: 18px;
+    padding: 12px 20px; border-radius: 13px;
+    background: var(--glass); border: 1px solid var(--line);
+    animation: rise .45s var(--ease) both;
+  }
+  .row .pos { font-family: var(--display); font-weight: 800; font-size: 18px; width: 34px; color: var(--ink-faint); }
+  .row .name { font-family: var(--display); font-weight: 600; font-size: 19px; flex: 1; overflow-wrap: anywhere; }
+  .row .gain { font-size: 14px; color: var(--mint); font-family: var(--display); font-weight: 700; }
+  .row .tot { font-family: var(--display); font-weight: 800; font-size: 22px; min-width: 92px; text-align: right; }
+
+  .actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; flex: 0 0 auto; }
+
+  .empty { color: var(--ink-faint); font-size: 16px; padding: 28px 0; }
+
+  /* ---------- dialog ---------- */
+  .scrim {
+    position: fixed; inset: 0; background: rgba(6,48,51,.82);
+    display: grid; place-items: center; z-index: 90; padding: 24px;
+    animation: fade .2s ease both;
+  }
+  @keyframes fade { from { opacity: 0; } }
+  .dialog {
+    max-width: 460px; width: 100%; padding: 30px 32px;
+    border-radius: var(--r-lg); background: #0a4048;
+    border: 1px solid var(--line);
+    animation: rise .32s var(--ease) both;
+  }
+  .dialog h3 { font-size: 22px; margin-bottom: 10px; }
+  .dialog p { color: var(--ink-dim); font-size: 15px; margin: 0 0 22px; }
+  .dialog .row2 { display: flex; gap: 10px; justify-content: flex-end; }
+
+  .keys { position: fixed; right: 16px; bottom: 12px; font-size: 11px; color: var(--ink-faint); letter-spacing: .04em; }
+
+  @media (max-width: 900px) {
+    .stage { padding: 20px 20px 24px; }
+    .lobby { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; grid-template-rows: none; }
+    .podium { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
-<div class="stage">
+<div class="aurora"><span></span><span></span><span></span></div>
+
+<div class="stage" id="stage">
 
   <div class="head">
     <div class="left">
       <h1 id="headTitle">Intega Quiz</h1>
-      <span class="day" id="headDay"></span>
+      <span class="day hidden" id="headDay"></span>
     </div>
-    <div class="right">
-      <span class="pill" id="pillPlayers">0 deltagere</span>
-      <button class="btn-ghost" id="nextBtn">Videre</button>
+    <div class="right" id="headActions">
+      <span class="pill hidden" id="pillPlayers"><b>0</b> deltagere</span>
+      <button class="btn-ghost hidden" id="backBtn">← Fortryd</button>
+      <button class="btn-ghost hidden" id="nextBtn">Videre →</button>
+      <button class="btn-ghost hidden" id="exitBtn">Skift dag</button>
     </div>
   </div>
 
-  <!-- ============ OPSTART ============ -->
+  <!-- ============ FORSIDE ============ -->
   <section class="view on" id="v-start">
-    <div class="box">
+    <div class="hero">
+      <div class="hero-top">
+        <div class="eyebrow">Intega · AI-fundamentet</div>
+        <h2>Dagens <em>quiz</em></h2>
+        <p class="lede">Vælg den dag, du kører nu. Hver dag har sin egen kode, sine egne deltagere og sin egen stilling, så intet blandes sammen på tværs.</p>
+      </div>
+
       <div id="setupWarn"></div>
-      <div id="resumeBox"></div>
-      <h2>Ny quizdag</h2>
-      <p>Vælg dagen. Deltagerne og pointene holdes adskilt fra de andre dage, og du kan altid åbne den samme dag igen senere.</p>
-      <div class="daylist" id="dayList"></div>
+
+      <div class="sect-label">Kursusdage</div>
+      <div class="daygrid" id="dayGrid"></div>
+
+      <div class="sect-label">Til dig selv</div>
+      <div class="daygrid" id="testGrid"></div>
     </div>
   </section>
 
@@ -169,8 +290,8 @@
   <section class="view" id="v-lobby">
     <div class="lobby">
       <div class="joinbox">
-        <h2>Gå ind på</h2>
-        <div class="joinurl" id="joinUrl">quiz.samuelbrask.com</div>
+        <p class="lede">Deltagerne går ind på</p>
+        <div class="joinurl" id="joinUrl">samuelbrask.com/quiz</div>
         <div class="codebox"><span>Kode</span><b id="codeOut">····</b></div>
 
         <div class="rounds" id="roundList"></div>
@@ -183,7 +304,7 @@
 
       <div class="qrwrap">
         <div class="qrcard"><div id="qr"></div></div>
-        <p>Scan, eller skriv adressen i browseren.<br>Koden er allerede med i QR-koden.</p>
+        <p>Scan koden, eller skriv adressen.<br>Koden er allerede med i QR-koden.</p>
       </div>
     </div>
   </section>
@@ -191,30 +312,35 @@
   <!-- ============ SPØRGSMÅL ============ -->
   <section class="view" id="v-q">
     <div class="qtop">
-      <span class="rnd" id="qRound"></span>
-      <span class="cnt" id="qCount"></span>
+      <span class="eyebrow" id="qRound"></span>
+      <span class="eyebrow" style="color:var(--ink-faint)" id="qCount"></span>
     </div>
     <h2 id="qText"></h2>
     <div class="qmeter">
-      <div class="ring">
-        <svg width="82" height="82">
-          <circle cx="41" cy="41" r="36" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="7"></circle>
-          <circle id="ringArc" cx="41" cy="41" r="36" fill="none" stroke="#EE7623" stroke-width="7" stroke-linecap="round"
-                  stroke-dasharray="226" stroke-dashoffset="0"></circle>
+      <div class="ring" id="ring">
+        <svg width="78" height="78">
+          <circle cx="39" cy="39" r="34" fill="none" stroke="rgba(255,255,255,.11)" stroke-width="6"></circle>
+          <circle id="ringArc" cx="39" cy="39" r="34" fill="none" stroke="#2ac8a5" stroke-width="6" stroke-linecap="round"
+                  stroke-dasharray="214" stroke-dashoffset="0"></circle>
         </svg>
         <b id="ringNum">20</b>
       </div>
       <div class="answered"><b id="ansCount">0</b> <span id="ansOf">af 0 har svaret</span></div>
+      <div class="meterbar"><i id="ansBar"></i></div>
     </div>
     <div class="grid" id="opts"></div>
   </section>
 
   <!-- ============ STILLING ============ -->
   <section class="view" id="v-board">
-    <h2 id="boardTitle">Samlet stilling</h2>
+    <div class="boardhead">
+      <h2>Samlet <em>stilling</em></h2>
+      <span class="eyebrow" style="color:var(--ink-faint)" id="boardDay"></span>
+    </div>
+    <div class="podium hidden" id="podium"></div>
     <div class="board" id="board"></div>
     <div class="actions">
-      <button class="btn-ghost" id="csvBtn">Gem stillingen som fil</button>
+      <button class="btn-ghost" id="csvBtn">Gem som fil</button>
       <button class="btn-ghost" id="lobbyBtn">Tilbage til lobbyen</button>
     </div>
   </section>
@@ -222,7 +348,7 @@
 </div>
 
 <div class="status-dot" id="dot"><i></i><span id="dotText">forbinder</span></div>
-<div class="keys">Mellemrum videre · S stilling · Esc lobby</div>
+<div class="keys">← fortryd · → videre · S stilling · Esc lobby · Q skift dag</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -234,22 +360,24 @@
 
   var CFG = window.QUIZ_CONFIG || {};
   var ROUNDS = window.QUIZ_ROUNDS || [];
-  var LS = "intega_quiz_host_v2";
   var OFFLINE = new URLSearchParams(location.search).get("offline") === "1";
 
   var sb = null, ch = null;
   var G = null;                 // { id, code, label }
   var players = {};             // id -> { id, nickname, total, lastGain }
   var phase = "start";
-  var cur = null;               // { qkey, r, qi, q, seconds, correct, deadline }
-  var answers = {};             // playerId -> { choice, ms }
+  var cur = null;
+  var answers = {};             // playerId -> { choice, ms, rowId }
   var doneRounds = {};
   var tick = null, autoAt = 0;
+  var rIdx = 0, qIdx = 0;
 
   function $(id) { return document.getElementById(id); }
-  function view(id) {
+  function view(id, lock) {
     var v = document.querySelectorAll(".view");
     for (var i = 0; i < v.length; i++) v[i].classList.toggle("on", v[i].id === id);
+    $("stage").classList.toggle("locked", !!lock);
+    if (!lock) window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function dot(live, t) { $("dot").classList.toggle("live", !!live); $("dotText").textContent = t; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
@@ -257,7 +385,33 @@
     if (i === 0) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 3 22 21H2Z" fill="#fff"/></svg>';
     if (i === 1) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 2 22 12 12 22 2 12Z" fill="#fff"/></svg>';
     if (i === 2) return '<svg class="shape" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="#fff"/></svg>';
-    return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="#fff"/></svg>';
+    return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#fff"/></svg>';
+  }
+  function countUp(el, to) {
+    var from = 0, t0 = performance.now(), dur = 700;
+    (function step(t) {
+      var p = Math.min(1, (t - t0) / dur);
+      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+
+  /* ---------- bekræftelsesdialog ---------- */
+  function confirmBox(title, text, okLabel, danger, onOk) {
+    var s = document.createElement("div");
+    s.className = "scrim";
+    s.innerHTML =
+      '<div class="dialog"><h3>' + esc(title) + "</h3><p>" + esc(text) + "</p>" +
+      '<div class="row2"><button class="btn-ghost" data-no>Fortryd</button>' +
+      '<button class="btn-ghost ' + (danger ? "btn-danger" : "") + '" data-yes>' + esc(okLabel) + "</button></div></div>";
+    document.body.appendChild(s);
+    function close() { s.remove(); document.removeEventListener("keydown", onKey, true); }
+    function onKey(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } }
+    document.addEventListener("keydown", onKey, true);
+    s.querySelector("[data-no]").onclick = close;
+    s.querySelector("[data-yes]").onclick = function () { close(); onOk(); };
+    s.onclick = function (e) { if (e.target === s) close(); };
+    s.querySelector("[data-yes]").focus();
   }
 
   /* ================= opsætning ================= */
@@ -267,8 +421,8 @@
     dot(true, "offline-visning");
   } else if (!ready) {
     $("setupWarn").innerHTML =
-      "<b>Quizzen mangler nøgler.</b><br>Åbn <code>config.js</code> og indsæt Project URL og anon-nøglen fra Supabase. " +
-      "Kør også <code>supabase-setup.sql</code> én gang i SQL Editor. Så virker resten.";
+      "<div class='setupwarn'><b>Quizzen mangler nøgler.</b><br>Åbn <code>config.js</code> og indsæt Project URL og den offentlige nøgle fra Supabase. " +
+      "Kør også <code>supabase-setup.sql</code> én gang i SQL Editor.</div>";
     dot(false, "ikke sat op");
   } else {
     sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY, {
@@ -279,23 +433,89 @@
 
   $("joinUrl").textContent = (CFG.JOIN_URL || "").replace(/^https?:\/\//, "");
 
-  /* ================= opstart ================= */
-  (CFG.DAYS || ["Kursusdag"]).forEach(function (d) {
-    var b = document.createElement("button");
-    b.className = "daybtn";
-    b.textContent = d;
-    b.addEventListener("click", function () { newGame(d); });
-    $("dayList").appendChild(b);
-  });
+  /* ================= forsiden ================= */
+  var DAYS = CFG.DAYS || ["Kursusdag"];
+  var TEST_DAYS = DAYS.filter(function (d) { return /^test/i.test(d); });
+  var REAL_DAYS = DAYS.filter(function (d) { return !/^test/i.test(d); });
 
-  var saved = null;
-  try { saved = JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) {}
-  if (saved && saved.id && ready && !OFFLINE) {
-    $("resumeBox").innerHTML =
-      '<div class="resume"><b>' + esc(saved.label || "Igangværende dag") + '</b>' +
-      '<p>Kode ' + esc(saved.code) + '. Deltagere og point ligger stadig i databasen.</p>' +
-      '<button class="btn" id="resumeBtn">Fortsæt hvor I slap</button></div>';
-    $("resumeBtn").addEventListener("click", function () { openGame(saved); });
+  function showStart() {
+    phase = "start";
+    G = null; cur = null; players = {}; answers = {}; doneRounds = {};
+    clearTick();
+    if (ch && sb) { sb.removeChannel(ch); ch = null; }
+    $("headTitle").textContent = "Intega Quiz";
+    $("headDay").classList.add("hidden");
+    ["pillPlayers", "backBtn", "nextBtn", "exitBtn"].forEach(function (i) { $(i).classList.add("hidden"); });
+    view("v-start", false);
+    loadDays();
+  }
+
+  function loadDays() {
+    if (OFFLINE || !ready) { renderDays({}); return; }
+    dot(false, "henter dage");
+    sb.from("quiz_games").select("id,code,label").then(function (r) {
+      var byLabel = {};
+      (r.data || []).forEach(function (g) { byLabel[g.label] = g; });
+      var ids = (r.data || []).map(function (g) { return g.id; });
+      if (!ids.length) { renderDays(byLabel); dot(false, "klar"); return; }
+      sb.from("quiz_players").select("game_id").in("game_id", ids).then(function (p) {
+        var n = {};
+        (p.data || []).forEach(function (x) { n[x.game_id] = (n[x.game_id] || 0) + 1; });
+        Object.keys(byLabel).forEach(function (k) { byLabel[k].n = n[byLabel[k].id] || 0; });
+        renderDays(byLabel);
+        dot(false, "klar");
+      });
+    });
+  }
+
+  function renderDays(byLabel) {
+    [["dayGrid", REAL_DAYS, false], ["testGrid", TEST_DAYS, true]].forEach(function (pair) {
+      var box = $(pair[0]);
+      box.innerHTML = "";
+      pair[1].forEach(function (label, i) {
+        var g = byLabel[label];
+        var d = document.createElement("div");
+        d.className = "daycard" + (g ? " live" : "") + (pair[2] ? " test" : "");
+        d.style.animationDelay = (i * 55) + "ms";
+        var state = g
+          ? '<span class="code">' + esc(g.code) + "</span><span>" + (g.n || 0) + (g.n === 1 ? " deltager" : " deltagere") + "</span>"
+          : "<span>Ikke startet</span>";
+        d.innerHTML =
+          "<h3>" + esc(label) + "</h3>" +
+          '<div class="state">' + state + "</div>" +
+          '<div class="acts">' +
+            '<button class="btn-ghost" data-go>' + (g ? "Fortsæt" : "Start dagen") + "</button>" +
+            (g ? '<button class="btn-ghost btn-danger" data-reset>Nulstil</button>' : "") +
+          "</div>";
+        d.querySelector("[data-go]").onclick = function () { g ? openGame(g) : newGame(label); };
+        if (g) d.querySelector("[data-reset]").onclick = function () { askReset(g); };
+        box.appendChild(d);
+      });
+      if (!pair[1].length) box.innerHTML = '<div class="empty">Ingen dage i listen. Ret <code>DAYS</code> i config.js.</div>';
+    });
+  }
+
+  function askReset(g) {
+    confirmBox(
+      "Nulstil " + g.label + "?",
+      "Alle deltagere og alle point for netop denne dag slettes. Koden " + g.code + " bliver den samme, så QR-koden virker stadig. De andre dage røres ikke.",
+      "Ja, nulstil dagen", true,
+      function () { resetDay(g); }
+    );
+  }
+
+  function resetDay(g) {
+    if (OFFLINE || !sb) return;
+    dot(false, "nulstiller");
+    sb.from("quiz_answers").delete().eq("game_id", g.id).then(function () {
+      return sb.from("quiz_players").delete().eq("game_id", g.id);
+    }).then(function () {
+      return sb.from("quiz_games").update({ state: { phase: "lobby" } }).eq("id", g.id);
+    }).then(function () {
+      if (G && G.id === g.id) { players = {}; answers = {}; doneRounds = {}; drawPlayers(); openLobby(); }
+      else loadDays();
+      dot(true, "nulstillet");
+    });
   }
 
   function code4() {
@@ -319,31 +539,31 @@
 
   function openGame(g) {
     G = { id: g.id, code: g.code, label: g.label };
-    localStorage.setItem(LS, JSON.stringify(G));
-    sb.from("quiz_players").select("id,nickname,total").eq("game_id", G.id)
-      .then(function (r) {
-        (r.data || []).forEach(function (p) { players[p.id] = { id: p.id, nickname: p.nickname, total: p.total, lastGain: 0 }; });
-        drawPlayers();
-        subscribe();
-        openLobby();
-      });
+    players = {}; answers = {}; doneRounds = {};
+    if (OFFLINE) { openLobby(); return; }
+    sb.from("quiz_players").select("id,nickname,total").eq("game_id", G.id).then(function (r) {
+      (r.data || []).forEach(function (p) { players[p.id] = { id: p.id, nickname: p.nickname, total: p.total, lastGain: 0 }; });
+      subscribe();
+      openLobby();
+    });
   }
 
   function subscribe() {
+    if (ch) sb.removeChannel(ch);
     ch = sb.channel("h:" + G.id)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "quiz_players", filter: "game_id=eq." + G.id },
         function (m) {
+          if (players[m.new.id]) return;
           players[m.new.id] = { id: m.new.id, nickname: m.new.nickname, total: m.new.total, lastGain: 0 };
-          drawPlayers();
+          drawPlayers(); drawAnsCount();
         })
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "quiz_answers", filter: "game_id=eq." + G.id },
         function (m) {
-          if (!cur || m.new.qkey !== cur.qkey) return;
+          if (!cur || m.new.qkey !== cur.qkey || phase !== "question") return;
           answers[m.new.player_id] = { choice: m.new.choice, ms: m.new.ms, rowId: m.new.id };
           drawAnsCount();
-          if (Object.keys(answers).length >= Object.keys(players).length && Object.keys(players).length > 0) {
-            setTimeout(reveal, 600);
-          }
+          var np = Object.keys(players).length;
+          if (np > 0 && Object.keys(answers).length >= np) setTimeout(reveal, 700);
         })
       .subscribe(function (st) { dot(st === "SUBSCRIBED", st === "SUBSCRIBED" ? "forbundet" : "forbinder"); });
   }
@@ -353,14 +573,17 @@
     phase = "lobby";
     cur = null;
     clearTick();
-    view("v-lobby");
     $("headTitle").textContent = "Intega Quiz";
     $("headDay").textContent = G.label || "";
-    $("codeOut").textContent = G.code;
+    $("headDay").classList.remove("hidden");
+    $("pillPlayers").classList.remove("hidden");
+    $("exitBtn").classList.remove("hidden");
+    $("backBtn").classList.add("hidden");
+    $("nextBtn").classList.remove("hidden");
     $("nextBtn").textContent = "Vis stilling";
-    drawRounds();
-    drawQR();
-    drawPlayers();
+    $("codeOut").textContent = G.code;
+    drawRounds(); drawQR(); drawPlayers();
+    view("v-lobby", true);
     push({ phase: "lobby" });
   }
 
@@ -368,8 +591,8 @@
     var box = $("qr");
     box.innerHTML = "";
     var url = (CFG.JOIN_URL || location.origin) + "?kode=" + G.code;
-    try { new QRCode(box, { text: url, width: 232, height: 232, correctLevel: QRCode.CorrectLevel.M }); }
-    catch (e) { box.innerHTML = '<div style="color:#333;font:12px sans-serif;width:232px">' + esc(url) + "</div>"; }
+    try { new QRCode(box, { text: url, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M }); }
+    catch (e) { box.innerHTML = '<div style="color:#333;font:12px sans-serif;width:220px">' + esc(url) + "</div>"; }
   }
 
   function drawRounds() {
@@ -379,33 +602,27 @@
       var b = document.createElement("button");
       b.className = "roundbtn" + (doneRounds[i] ? " done" : "");
       b.textContent = r.title;
-      b.addEventListener("click", function () { startRound(i); });
+      b.onclick = function () { rIdx = i; qIdx = 0; showQuestion(); };
       list.appendChild(b);
     });
   }
 
   function drawPlayers() {
     var ids = Object.keys(players);
-    $("pillPlayers").textContent = ids.length + (ids.length === 1 ? " deltager" : " deltagere");
+    $("pillPlayers").innerHTML = "<b>" + ids.length + "</b> " + (ids.length === 1 ? "deltager" : "deltagere");
     $("playerLine").textContent = ids.length ? "I lokalet lige nu" : "Ingen er kommet ind endnu";
     var c = $("chips");
     c.innerHTML = "";
-    ids.forEach(function (id) {
+    ids.forEach(function (id, i) {
       var s = document.createElement("span");
       s.className = "chip";
+      s.style.animationDelay = Math.min(i * 28, 700) + "ms";
       s.textContent = players[id].nickname;
       c.appendChild(s);
     });
   }
 
-  /* ================= runder ================= */
-  var rIdx = 0, qIdx = 0;
-
-  function startRound(i) {
-    rIdx = i; qIdx = 0;
-    showQuestion();
-  }
-
+  /* ================= spørgsmål ================= */
   function showQuestion() {
     var R = ROUNDS[rIdx];
     if (!R || qIdx >= R.questions.length) { doneRounds[rIdx] = true; showBoard(); return; }
@@ -414,13 +631,16 @@
 
     phase = "question";
     answers = {};
-    cur = { qkey: "r" + rIdx + "q" + qIdx, r: rIdx, qi: qIdx, q: Q, seconds: secs, correct: Q.correct };
+    cur = { qkey: "r" + rIdx + "q" + qIdx, nonce: Date.now(), r: rIdx, qi: qIdx, q: Q, seconds: secs, correct: Q.correct };
 
     $("headTitle").textContent = R.title;
     $("qRound").textContent = R.subtitle || R.title;
-    $("qCount").textContent = (qIdx + 1) + " af " + R.questions.length;
+    $("qCount").textContent = (qIdx + 1) + " / " + R.questions.length;
     $("qText").textContent = Q.q;
     $("nextBtn").textContent = "Vis facit";
+    $("nextBtn").classList.remove("hidden");
+    $("backBtn").classList.remove("hidden");
+    $("backBtn").textContent = qIdx === 0 ? "← Afbryd runden" : "← Forrige";
 
     var box = $("opts");
     box.className = "grid";
@@ -434,17 +654,12 @@
     });
 
     drawAnsCount();
-    view("v-q");
+    view("v-q", true);
+    $("ring").classList.remove("low");
 
     push({
-      phase: "question",
-      qkey: cur.qkey,
-      roundTitle: R.title,
-      qi: qIdx,
-      qn: R.questions.length,
-      q: Q.q,
-      a: Q.a,
-      seconds: secs
+      phase: "question", qkey: cur.qkey, nonce: cur.nonce, roundTitle: R.title,
+      qi: qIdx, qn: R.questions.length, q: Q.q, a: Q.a, seconds: secs
     });
 
     autoAt = Date.now() + secs * 1000;
@@ -453,7 +668,8 @@
       var left = Math.max(0, autoAt - Date.now());
       var frac = left / (secs * 1000);
       $("ringNum").textContent = Math.ceil(left / 1000);
-      $("ringArc").style.strokeDashoffset = String(226 * (1 - frac));
+      $("ringArc").style.strokeDashoffset = String(214 * (1 - frac));
+      $("ring").classList.toggle("low", left <= 5000 && left > 0);
       if (left <= 0) { clearTick(); reveal(); }
     }, 100);
   }
@@ -461,7 +677,8 @@
   function drawAnsCount() {
     var n = Object.keys(answers).length, t = Object.keys(players).length;
     $("ansCount").textContent = n;
-    $("ansOf").textContent = "af " + t + (t === 1 ? " har svaret" : " har svaret");
+    $("ansOf").textContent = "af " + t + " har svaret";
+    $("ansBar").style.width = (t ? (n / t * 100) : 0) + "%";
   }
 
   /* ================= facit og point ================= */
@@ -469,29 +686,27 @@
     if (phase !== "question" || !cur) return;
     phase = "reveal";
     clearTick();
-    $("nextBtn").textContent = "Næste";
+    $("ring").classList.remove("low");
+    $("nextBtn").textContent = "Næste →";
+    $("backBtn").textContent = "← Kør om";
 
     var lim = cur.seconds * 1000;
     var counts = [0, 0, 0, 0];
-    var playerUpd = [];
-    var answerUpd = [];
+    var playerUpd = [], answerUpd = [];
 
     Object.keys(answers).forEach(function (pid) {
       var a = answers[pid];
       counts[a.choice] = (counts[a.choice] || 0) + 1;
       var ok = a.choice === cur.correct;
       var pts = ok ? Math.max(100, Math.round(100 + 900 * (1 - Math.min(a.ms, lim) / lim))) : 0;
-
       var p = players[pid];
       if (p) {
-        p.total += pts;
-        p.lastGain = pts;
+        p.total += pts; p.lastGain = pts;
         playerUpd.push({ id: p.id, game_id: G.id, nickname: p.nickname, total: p.total, last_gain: pts, last_key: cur.qkey });
       }
       if (a.rowId) answerUpd.push({ id: a.rowId, game_id: G.id, player_id: pid, qkey: cur.qkey, choice: a.choice, ms: a.ms, correct: ok, points: pts });
     });
 
-    // Deltagere uden svar får nulstillet deres seneste gevinst.
     Object.keys(players).forEach(function (pid) {
       if (answers[pid]) return;
       var p = players[pid];
@@ -499,7 +714,6 @@
       playerUpd.push({ id: p.id, game_id: G.id, nickname: p.nickname, total: p.total, last_gain: 0, last_key: cur.qkey });
     });
 
-    // Vis på storskærmen
     var total = Object.keys(answers).length || 1;
     var box = $("opts");
     box.className = "grid revealed";
@@ -510,7 +724,7 @@
       nodes[i].querySelector(".fill").style.width = ((counts[i] || 0) / total * 100) + "%";
     }
 
-    push({ phase: "reveal", qkey: cur.qkey, correct: cur.correct, counts: counts });
+    push({ phase: "reveal", qkey: cur.qkey, nonce: cur.nonce, correct: cur.correct, counts: counts });
 
     if (!OFFLINE && sb) {
       if (playerUpd.length) sb.from("quiz_players").upsert(playerUpd, { onConflict: "id" }).then(function () {});
@@ -518,36 +732,98 @@
     }
   }
 
+  /* ---------- fortryd: rul et spørgsmål tilbage ---------- */
+  function rollback(qkey, done) {
+    if (OFFLINE || !sb) { done && done(); return; }
+    dot(false, "fortryder");
+    sb.from("quiz_answers").select("id,player_id,points").eq("game_id", G.id).eq("qkey", qkey)
+      .then(function (r) {
+        var upd = [];
+        (r.data || []).forEach(function (a) {
+          var p = players[a.player_id];
+          if (p && a.points) {
+            p.total = Math.max(0, p.total - a.points);
+            p.lastGain = 0;
+            upd.push({ id: p.id, game_id: G.id, nickname: p.nickname, total: p.total, last_gain: 0, last_key: null });
+          }
+        });
+        var jobs = [sb.from("quiz_answers").delete().eq("game_id", G.id).eq("qkey", qkey)];
+        if (upd.length) jobs.push(sb.from("quiz_players").upsert(upd, { onConflict: "id" }));
+        return Promise.all(jobs);
+      })
+      .then(function () { dot(true, "forbundet"); done && done(); })
+      .catch(function (e) { console.error(e); dot(true, "forbundet"); done && done(); });
+  }
+
+  function back() {
+    if (phase === "reveal") {
+      // kør samme spørgsmål om
+      rollback(cur.qkey, function () { answers = {}; showQuestion(); });
+      return;
+    }
+    if (phase === "question") {
+      if (qIdx === 0) { clearTick(); openLobby(); return; }
+      var prevKey = "r" + rIdx + "q" + (qIdx - 1);
+      clearTick();
+      rollback(prevKey, function () { qIdx--; answers = {}; showQuestion(); });
+      return;
+    }
+    if (phase === "board") { openLobby(); }
+  }
+
   /* ================= stilling ================= */
   function showBoard() {
     phase = "board";
     clearTick();
     cur = null;
-    view("v-board");
     $("headTitle").textContent = "Stilling";
-    $("nextBtn").textContent = "Videre";
-    $("boardTitle").textContent = "Samlet stilling · " + (G.label || "");
+    $("nextBtn").textContent = "Videre →";
+    $("backBtn").classList.add("hidden");
+    $("boardDay").textContent = G.label || "";
 
     var ranked = Object.keys(players).map(function (k) { return players[k]; })
-      .sort(function (a, b) { return b.total - a.total; }).slice(0, 10);
+      .sort(function (a, b) { return b.total - a.total || a.nickname.localeCompare(b.nickname); });
 
-    var b = $("board");
-    b.innerHTML = "";
+    var pod = $("podium"), b = $("board");
+    pod.innerHTML = ""; b.innerHTML = ""; pod.classList.remove("solo");
+
     if (!ranked.length) {
-      b.innerHTML = '<div class="row"><span class="name">Ingen deltagere endnu</span></div>';
+      pod.classList.add("hidden");
+      b.innerHTML = '<div class="empty">Ingen deltagere endnu. De skal ind på ' + esc((CFG.JOIN_URL || "").replace(/^https?:\/\//, "")) + " med koden " + esc(G.code) + ".</div>";
     } else {
-      ranked.forEach(function (p, i) {
+      pod.classList.remove("hidden");
+      var order = [1, 0, 2]; // sølv, guld, bronze — guld i midten
+      order.forEach(function (idx, k) {
+        var p = ranked[idx];
+        var d = document.createElement("div");
+        d.className = "pod" + (idx === 0 ? " p1" : "");
+        d.style.animationDelay = (k * 130) + "ms";
+        if (!p) { d.style.visibility = "hidden"; d.innerHTML = "<div class='medal'>—</div>"; }
+        else d.innerHTML =
+          '<div class="medal">' + ["1. plads", "2. plads", "3. plads"][idx] + "</div>" +
+          '<div class="nm">' + esc(p.nickname) + "</div>" +
+          '<div class="sc" data-to="' + p.total + '">0</div>';
+        pod.appendChild(d);
+      });
+      if (ranked.length <= 3) pod.classList.add("solo");
+      pod.querySelectorAll(".sc").forEach(function (el, i) {
+        setTimeout(function () { countUp(el, parseInt(el.getAttribute("data-to"), 10)); }, 300 + i * 130);
+      });
+
+      ranked.slice(3, 20).forEach(function (p, i) {
         var row = document.createElement("div");
-        row.className = "row" + (i === 0 ? " top" : "");
-        row.style.animationDelay = (i * 55) + "ms";
+        row.className = "row";
+        row.style.animationDelay = (600 + i * 45) + "ms";
         row.innerHTML =
-          '<span class="pos">' + (i + 1) + "</span>" +
+          '<span class="pos">' + (i + 4) + "</span>" +
           '<span class="name">' + esc(p.nickname) + "</span>" +
           '<span class="gain">' + (p.lastGain > 0 ? "+" + p.lastGain : "") + "</span>" +
           '<span class="tot">' + p.total + "</span>";
         b.appendChild(row);
       });
     }
+
+    view("v-board", true);
     push({ phase: "scoreboard" });
   }
 
@@ -565,15 +841,30 @@
     if (phase === "lobby") { showBoard(); return; }
   }
 
-  $("nextBtn").addEventListener("click", next);
-  $("lobbyBtn").addEventListener("click", openLobby);
-  $("csvBtn").addEventListener("click", csv);
+  function exitDay() {
+    confirmBox(
+      "Skift dag?",
+      "Du kommer tilbage til dagsoversigten. Intet slettes, og du kan altid vælge dagen igen og fortsætte, hvor I slap.",
+      "Ja, tilbage til oversigten", false,
+      showStart
+    );
+  }
+
+  $("nextBtn").onclick = next;
+  $("backBtn").onclick = back;
+  $("exitBtn").onclick = exitDay;
+  $("lobbyBtn").onclick = openLobby;
+  $("csvBtn").onclick = csv;
 
   document.addEventListener("keydown", function (e) {
     if (phase === "start") return;
-    if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") { e.preventDefault(); next(); }
-    else if (e.key === "s" || e.key === "S") { showBoard(); }
-    else if (e.key === "Escape") { openLobby(); }
+    if (document.querySelector(".scrim")) return;
+    var k = e.key;
+    if (k === " " || k === "Enter" || k === "ArrowRight") { e.preventDefault(); next(); }
+    else if (k === "ArrowLeft") { e.preventDefault(); back(); }
+    else if (k === "s" || k === "S") { showBoard(); }
+    else if (k === "Escape") { if (phase !== "lobby") openLobby(); }
+    else if (k === "q" || k === "Q") { exitDay(); }
   });
 
   function clearTick() { if (tick) { clearInterval(tick); tick = null; } }
@@ -591,15 +882,11 @@
     var txt = rows.map(function (r) { return r.join(";"); }).join("\n");
     var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob(["\ufeff" + txt], { type: "text/csv;charset=utf-8" }));
-    a.download = "quiz-stilling-" + (G.label || "dag").replace(/[^\wæøåÆØÅ]+/g, "-") + ".csv";
+    a.download = "quiz-" + (G.label || "dag").replace(/[^\wæøåÆØÅ]+/g, "-").toLowerCase() + ".csv";
     a.click();
   }
 
-  /* offline-visning: hop direkte i lobbyen med testdata */
-  if (OFFLINE) {
-    G = { id: "offline", code: "TEST", label: "Offline-visning" };
-    openLobby();
-  }
+  showStart();
 })();
 </script>
 </body>

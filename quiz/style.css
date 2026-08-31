@@ -1,136 +1,200 @@
 /* ============================================================
-   Intega Quiz
-   ------------------------------------------------------------
-   RET BRANDFARVERNE HER, hvis hex-koderne ikke matcher
-   brandguiden præcist. Alt andet følger med.
+   Intega Quiz — designsystem
+   Farverne herunder er hentet fra integaone.dk.
    ============================================================ */
 
 :root {
-  --petrol-deep: #072A34;
-  --petrol:      #0F4C5C;
-  --petrol-soft: #14657A;
-  --line:        rgba(255, 255, 255, .14);
-  --orange:      #EE7623;
-  --mint:        #2BA98A;
-  --mint-bright: #63D6B4;
-  --ink:         #F3F7F8;
-  --ink-dim:     rgba(243, 247, 248, .62);
-  --ink-faint:   rgba(243, 247, 248, .30);
+  /* brand */
+  --deep:        #063033;
+  --petrol:      #0e5a67;
+  --petrol-lift: #10707f;
+  --mint:        #2ac8a5;
+  --mint-soft:   #a6edde;
+  --orange:      #ff611a;
+  --cream:       #ffead7;
+  --coral:       #ef6b51;
+  --red:         #f01245;
 
-  /* De fire svarfelter. Hver farve har også en form, så de kan
-     skelnes uden farvesyn og råbes ud i lokalet ("trekanten"). */
-  --a0: #EE7623;  /* trekant  */
-  --a1: #2BA98A;  /* rombe    */
-  --a2: #4C63B6;  /* cirkel   */
-  --a3: #B0447F;  /* firkant  */
+  /* flader */
+  --ink:        #f4faf9;
+  --ink-dim:    rgba(244, 250, 249, .66);
+  --ink-faint:  rgba(244, 250, 249, .34);
+  --line:       rgba(166, 237, 222, .16);
+  --glass:      rgba(255, 255, 255, .055);
+  --glass-lift: rgba(255, 255, 255, .10);
 
-  --radius: 14px;
+  /* svarfelter — hver har også en form, så de kan skelnes uden farve */
+  --a0: #ff611a;  /* trekant  */
+  --a1: #2ac8a5;  /* rombe    */
+  --a2: #4f5bd5;  /* cirkel   */
+  --a3: #f01245;  /* firkant  */
+
+  --r-sm: 10px;
+  --r:    16px;
+  --r-lg: 24px;
 
   --display: "Montserrat", "Segoe UI", system-ui, sans-serif;
-  --body: Calibri, "Segoe UI", system-ui, sans-serif;
+  --serif:   "DM Serif Display", Georgia, serif;
+  --body:    "DM Sans", "Segoe UI", system-ui, sans-serif;
+
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --ease-io: cubic-bezier(.65, 0, .35, 1);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background: var(--petrol-deep);
-  color: var(--ink);
-  font-family: var(--body);
-  overscroll-behavior: none;
-}
+html { height: 100%; }
 
 body {
-  background:
-    radial-gradient(1200px 700px at 78% -8%, rgba(43,169,138,.18), transparent 60%),
-    radial-gradient(900px 600px at 8% 104%, rgba(238,118,35,.14), transparent 60%),
-    var(--petrol-deep);
+  margin: 0;
+  min-height: 100%;
+  background: var(--deep);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .display { font-family: var(--display); font-weight: 700; letter-spacing: -.01em; margin: 0; }
+/* Levende baggrund. Tre farvede skyer der driver langsomt rundt. */
+.aurora {
+  position: fixed;
+  inset: -20%;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(70px);
+  opacity: .5;
+}
+.aurora span {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+}
+.aurora span:nth-child(1) {
+  width: 46vw; height: 46vw; left: 58%; top: -6%;
+  background: radial-gradient(circle, var(--mint) 0%, transparent 68%);
+  animation: drift1 34s var(--ease-io) infinite alternate;
+}
+.aurora span:nth-child(2) {
+  width: 40vw; height: 40vw; left: -8%; top: 52%;
+  background: radial-gradient(circle, var(--orange) 0%, transparent 68%);
+  animation: drift2 43s var(--ease-io) infinite alternate;
+  opacity: .55;
+}
+.aurora span:nth-child(3) {
+  width: 34vw; height: 34vw; left: 26%; top: 24%;
+  background: radial-gradient(circle, var(--petrol-lift) 0%, transparent 70%);
+  animation: drift3 51s var(--ease-io) infinite alternate;
+}
+@keyframes drift1 { to { transform: translate3d(-14vw, 16vh, 0) scale(1.22); } }
+@keyframes drift2 { to { transform: translate3d(18vw, -14vh, 0) scale(1.16); } }
+@keyframes drift3 { to { transform: translate3d(10vw, 12vh, 0) scale(.86); } }
 
-button { font-family: var(--body); cursor: pointer; border: 0; }
-button:focus-visible, input:focus-visible { outline: 3px solid var(--mint-bright); outline-offset: 3px; }
+h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 700; letter-spacing: -.02em; line-height: 1.12; }
+.serif { font-family: var(--serif); font-weight: 400; letter-spacing: -.01em; }
+.serif em { font-style: italic; color: var(--mint-soft); }
+
+button { font-family: var(--body); border: 0; cursor: pointer; color: inherit; }
 input { font-family: var(--body); }
+:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; border-radius: 4px; }
 
 .hidden { display: none !important; }
 
-/* ---------- fælles komponenter ---------- */
+/* ---------- byggeklodser ---------- */
 
 .eyebrow {
   font-family: var(--display);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .16em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  color: var(--mint-bright);
+  color: var(--mint);
 }
 
 .btn {
+  position: relative;
   background: var(--orange);
   color: #fff;
   font-weight: 700;
-  font-size: 17px;
-  padding: 15px 26px;
-  border-radius: var(--radius);
-  transition: transform .12s ease, filter .12s ease;
+  font-size: 16px;
+  padding: 15px 28px;
+  border-radius: var(--r);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+  box-shadow: 0 6px 20px -8px rgba(255, 97, 26, .8);
 }
-.btn:hover { filter: brightness(1.07); }
-.btn:active { transform: translateY(1px); }
-.btn[disabled] { opacity: .4; cursor: not-allowed; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -10px rgba(255, 97, 26, .95); }
+.btn:active { transform: translateY(0); }
+.btn[disabled] { opacity: .38; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.btn-mint { background: var(--mint); color: var(--deep); box-shadow: 0 6px 20px -8px rgba(42, 200, 165, .8); }
+.btn-mint:hover { box-shadow: 0 12px 28px -10px rgba(42, 200, 165, .95); }
 
 .btn-ghost {
-  background: transparent;
-  color: var(--ink);
+  background: var(--glass);
   border: 1px solid var(--line);
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   padding: 11px 18px;
-  border-radius: 11px;
+  border-radius: 12px;
+  transition: background .16s, border-color .16s, transform .16s var(--ease);
 }
-.btn-ghost:hover { background: rgba(255,255,255,.06); }
+.btn-ghost:hover { background: var(--glass-lift); border-color: rgba(166, 237, 222, .3); }
+.btn-ghost:active { transform: scale(.97); }
+.btn-ghost[disabled] { opacity: .3; cursor: not-allowed; }
+
+.btn-danger { border-color: rgba(240, 18, 69, .42); color: #ffb3c2; }
+.btn-danger:hover { background: rgba(240, 18, 69, .16); border-color: rgba(240, 18, 69, .7); }
 
 .field {
   width: 100%;
-  background: rgba(255,255,255,.07);
+  background: var(--glass);
   border: 1px solid var(--line);
   color: var(--ink);
-  font-size: 19px;
+  font-size: 18px;
   padding: 16px 18px;
-  border-radius: var(--radius);
+  border-radius: var(--r);
+  transition: border-color .18s, background .18s;
 }
+.field:focus { border-color: var(--mint); background: var(--glass-lift); }
 .field::placeholder { color: var(--ink-faint); }
 
+.card {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+
+/* forbindelsesprik */
 .status-dot {
   position: fixed;
-  left: 14px;
-  bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  color: var(--ink-faint);
-  z-index: 40;
+  left: 16px; bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: var(--ink-faint);
+  letter-spacing: .05em;
+  z-index: 60;
 }
-.status-dot i {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #C0562E;
-  display: block;
+.status-dot i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral); display: block; }
+.status-dot.live i {
+  background: var(--mint);
+  box-shadow: 0 0 0 0 rgba(42, 200, 165, .7);
+  animation: ping 2.4s ease-out infinite;
 }
-.status-dot.live i { background: var(--mint-bright); }
-
-.err {
-  color: #FFB59B;
-  font-size: 14px;
-  min-height: 20px;
-  margin-top: 10px;
+@keyframes ping {
+  70%  { box-shadow: 0 0 0 9px rgba(42, 200, 165, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(42, 200, 165, 0); }
 }
 
-/* ---------- svarformer ---------- */
-.shape { width: 26px; height: 26px; flex: 0 0 26px; }
+.err { color: #ffb3c2; font-size: 14px; min-height: 20px; }
+
+.rise { animation: rise .5s var(--ease) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  .aurora { display: none; }
 }

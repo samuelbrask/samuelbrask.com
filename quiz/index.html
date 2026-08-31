@@ -2,114 +2,106 @@
 <html lang="da">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<meta name="theme-color" content="#072A34">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#063033">
 <title>Intega Quiz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
   body { display: flex; flex-direction: column; min-height: 100dvh; }
 
   .wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 22px 20px calc(18px + env(safe-area-inset-bottom));
-    max-width: 620px;
-    width: 100%;
-    margin: 0 auto;
+    flex: 1; display: flex; flex-direction: column;
+    padding: 20px 18px calc(16px + env(safe-area-inset-bottom));
+    max-width: 640px; width: 100%; margin: 0 auto;
   }
 
-  /* topbar med navn og point, står hele dagen */
+  /* topbjælke med navn og point */
   .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--line);
-    margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-bottom: 14px; border-bottom: 1px solid var(--line); margin-bottom: 18px;
+    flex: 0 0 auto;
   }
-  .topbar .who { font-family: var(--display); font-weight: 700; font-size: 16px; }
-  .topbar .day { font-size: 11px; color: var(--ink-faint); margin-top: 2px; letter-spacing: .04em; }
-  .topbar .pts { text-align: right; }
-  .topbar .pts b { font-family: var(--display); font-size: 22px; color: var(--mint-bright); display: block; line-height: 1; }
-  .topbar .pts span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+  .topbar .who { font-family: var(--display); font-weight: 700; font-size: 16px; overflow-wrap: anywhere; }
+  .topbar .day { font-size: 10px; color: var(--ink-faint); letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
+  .topbar .pts { text-align: right; flex: 0 0 auto; }
+  .topbar .pts b { font-family: var(--display); font-weight: 800; font-size: 24px; color: var(--mint); display: block; line-height: 1; }
+  .topbar .pts span { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint); }
 
   .view { display: none; flex: 1; flex-direction: column; }
   .view.on { display: flex; }
 
-  /* ---- join ---- */
-  .brandmark { font-family: var(--display); font-weight: 800; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--mint-bright); }
-  #v-join h1 { font-size: 34px; line-height: 1.08; margin: 14px 0 8px; }
-  #v-join p.lede { color: var(--ink-dim); font-size: 16px; margin: 0 0 30px; line-height: 1.5; }
+  /* ---------- login ---------- */
+  #v-join h1 { font-family: var(--serif); font-weight: 400; font-size: 40px; line-height: 1.05; margin: 12px 0 10px; }
+  #v-join h1 em { font-style: italic; color: var(--mint-soft); }
+  #v-join p.lede { color: var(--ink-dim); font-size: 15px; margin: 0 0 28px; }
   .stack { display: flex; flex-direction: column; gap: 14px; }
-  .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; font-family: var(--display); font-weight: 600; }
-  #code { text-transform: uppercase; letter-spacing: .3em; font-family: var(--display); font-weight: 700; font-size: 24px; }
-  .joinfoot { margin-top: auto; padding-top: 24px; color: var(--ink-faint); font-size: 12px; line-height: 1.6; }
+  .label { font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; }
+  #code { text-transform: uppercase; letter-spacing: .38em; font-family: var(--display); font-weight: 800; font-size: 26px; text-align: center; }
+  .joinfoot { margin-top: auto; padding-top: 26px; color: var(--ink-faint); font-size: 12px; line-height: 1.6; }
 
-  /* ---- venteskærm ---- */
-  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
-  .center h2 { font-size: 26px; }
-  .center p { color: var(--ink-dim); margin: 0; font-size: 16px; max-width: 34ch; line-height: 1.5; }
+  /* ---------- ventefelt ---------- */
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; padding: 20px 0; }
+  .center h2 { font-family: var(--serif); font-weight: 400; font-size: 27px; }
+  .center p { color: var(--ink-dim); margin: 0; font-size: 15px; max-width: 32ch; }
 
-  .pulse { width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--mint-bright); animation: spin 1.1s linear infinite; }
+  .orbit { width: 62px; height: 62px; position: relative; }
+  .orbit i {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid transparent; border-top-color: var(--mint);
+    animation: spin 1.15s linear infinite;
+  }
+  .orbit i:nth-child(2) { inset: 9px; border-top-color: var(--orange); animation-duration: 1.7s; animation-direction: reverse; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ---- spørgsmål ---- */
-  .qhead { margin-bottom: 16px; }
-  .qhead .meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
-  .qhead .meta .rnd { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mint-bright); font-family: var(--display); font-weight: 600; }
-  .qhead .meta .cnt { font-size: 11px; color: var(--ink-faint); letter-spacing: .1em; }
-  .qhead h2 { font-size: 21px; line-height: 1.3; }
+  /* ---------- spørgsmål ---------- */
+  .qhead { flex: 0 0 auto; margin-bottom: 12px; }
+  .qhead .meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 9px; }
+  .qhead h2 { font-family: var(--serif); font-weight: 400; font-size: 22px; line-height: 1.28; }
 
-  .timerbar { height: 4px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; margin-bottom: 20px; }
-  .timerbar i { display: block; height: 100%; background: var(--orange); width: 100%; transform-origin: left; }
+  .timerbar { height: 5px; background: rgba(255,255,255,.1); border-radius: 99px; overflow: hidden; margin-bottom: 16px; flex: 0 0 auto; }
+  .timerbar i { display: block; height: 100%; width: 100%; background: var(--mint); transform-origin: left; border-radius: 99px; transition: background .3s; }
+  .timerbar.low i { background: var(--orange); }
 
-  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; flex: 1; align-content: stretch; }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex: 1; min-height: 260px; }
   .ans {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    min-height: 118px;
-    padding: 15px 15px 16px;
-    border-radius: var(--radius);
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    text-align: left;
-    line-height: 1.32;
-    transition: transform .1s ease, opacity .18s ease;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+    gap: 10px; padding: 14px; border-radius: var(--r); color: #fff;
+    font-size: 15px; font-weight: 600; text-align: left; line-height: 1.3;
+    transition: transform .16s var(--ease), opacity .28s, box-shadow .2s;
+    animation: rise .45s var(--ease) both;
   }
-  .ans:active { transform: scale(.975); }
-  .ans[data-i="0"] { background: var(--a0); }
-  .ans[data-i="1"] { background: var(--a1); }
-  .ans[data-i="2"] { background: var(--a2); }
-  .ans[data-i="3"] { background: var(--a3); }
-  .ans.dim { opacity: .28; }
-  .ans.picked { outline: 3px solid #fff; outline-offset: 2px; }
+  .ans[data-i="0"] { background: var(--a0); animation-delay: .03s; }
+  .ans[data-i="1"] { background: var(--a1); animation-delay: .08s; }
+  .ans[data-i="2"] { background: var(--a2); animation-delay: .13s; }
+  .ans[data-i="3"] { background: var(--a3); animation-delay: .18s; }
+  .ans .shape { width: 24px; height: 24px; }
+  .ans:active { transform: scale(.96); }
+  .ans.dim { opacity: .22; }
+  .ans.picked { box-shadow: 0 0 0 3px #fff, 0 12px 30px -12px rgba(255,255,255,.6); }
+  .ans[disabled] { cursor: default; }
 
-  @media (min-width: 700px) {
-    .answers { gap: 14px; }
-    .ans { min-height: 130px; font-size: 17px; }
-    .qhead h2 { font-size: 26px; }
+  @media (min-width: 620px) {
+    .ans { font-size: 17px; padding: 18px; }
+    .qhead h2 { font-size: 27px; }
   }
 
-  /* ---- resultat ---- */
-  .verdict { font-family: var(--display); font-size: 40px; font-weight: 800; line-height: 1; }
-  .verdict.ok { color: var(--mint-bright); }
-  .verdict.no { color: #FF9E7A; }
-  .gain { font-family: var(--display); font-size: 17px; color: var(--ink); }
-  .rankline { color: var(--ink-dim); font-size: 15px; }
+  /* ---------- resultat ---------- */
+  .verdict { font-family: var(--display); font-weight: 800; font-size: 40px; line-height: 1; }
+  .verdict.ok { color: var(--mint); animation: bounce .6s var(--ease); }
+  .verdict.no { color: var(--coral); }
+  @keyframes bounce { 0% { transform: scale(.7); opacity: 0; } 55% { transform: scale(1.12); } }
+  .gain { font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--cream); min-height: 30px; }
+  .rankline { color: var(--ink-dim); font-size: 14px; }
 
-  .foot { text-align: center; color: var(--ink-faint); font-size: 11px; padding-top: 20px; letter-spacing: .04em; }
+  .foot { text-align: center; color: var(--ink-faint); font-size: 10px; padding-top: 16px; letter-spacing: .12em; text-transform: uppercase; flex: 0 0 auto; }
 </style>
 </head>
 <body>
+
+<div class="aurora"><span></span><span></span><span></span></div>
 
 <div class="wrap">
 
@@ -126,14 +118,14 @@
 
   <!-- ============ LOGIN ============ -->
   <section class="view on" id="v-join">
-    <div class="brandmark">Intega</div>
-    <h1>Dagens quiz</h1>
+    <div class="eyebrow">Intega</div>
+    <h1>Dagens <em>quiz</em></h1>
     <p class="lede">Skriv koden fra storskærmen og vælg et kaldenavn. Lad fanen stå åben resten af dagen, så tæller pointene med hele vejen.</p>
 
     <div class="stack">
       <div>
         <div class="label">Kode</div>
-        <input class="field" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD" inputmode="text">
+        <input class="field" id="code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD">
       </div>
       <div>
         <div class="label">Kaldenavn</div>
@@ -151,7 +143,7 @@
   <!-- ============ VENT ============ -->
   <section class="view" id="v-wait">
     <div class="center">
-      <div class="pulse"></div>
+      <div class="orbit"><i></i><i></i></div>
       <h2 id="waitTitle">Du er med</h2>
       <p id="waitText">Kig op på storskærmen. Spørgsmålet kommer her, når runden starter.</p>
     </div>
@@ -161,21 +153,21 @@
   <section class="view" id="v-q">
     <div class="qhead">
       <div class="meta">
-        <span class="rnd" id="qRound"></span>
-        <span class="cnt" id="qCount"></span>
+        <span class="eyebrow" id="qRound"></span>
+        <span class="eyebrow" style="color:var(--ink-faint)" id="qCount"></span>
       </div>
       <h2 id="qText"></h2>
     </div>
-    <div class="timerbar"><i id="qBar"></i></div>
+    <div class="timerbar" id="timerbar"><i id="qBar"></i></div>
     <div class="answers" id="answers"></div>
   </section>
 
   <!-- ============ SVAR SENDT ============ -->
   <section class="view" id="v-sent">
     <div class="center">
-      <div class="pulse"></div>
-      <h2>Svar sendt</h2>
-      <p>Hurtige svar giver flere point. Vent på storskærmen.</p>
+      <div class="orbit"><i></i><i></i></div>
+      <h2 id="sentTitle">Svar sendt</h2>
+      <p id="sentText">Hurtige svar giver flere point. Kig op på storskærmen.</p>
     </div>
   </section>
 
@@ -203,10 +195,10 @@
   var LS = "intega_quiz_player_v2";
 
   var sb = null, ch = null;
-  var me = null;          // { gameId, playerId, code, nickname, day }
-  var curKey = null;      // qkey for det spørgsmål, der vises nu
-  var answered = {};      // qkey -> valgt svar
-  var t0 = 0, tick = null;
+  var me = null;
+  var curKey = null, curNonce = null;
+  var answered = {};
+  var t0 = 0, tick = null, locked = false;
   var lastTotal = 0;
 
   function $(id) { return document.getElementById(id); }
@@ -214,12 +206,10 @@
     var v = document.querySelectorAll(".view");
     for (var i = 0; i < v.length; i++) v[i].classList.toggle("on", v[i].id === id);
   }
-  function dot(live, text) {
-    $("dot").classList.toggle("live", !!live);
-    $("dotText").textContent = text;
-  }
+  function dot(live, t) { $("dot").classList.toggle("live", !!live); $("dotText").textContent = t; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+  function buzz(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} }
 
-  /* ---------- opsætningstjek ---------- */
   if (!CFG.SUPABASE_URL || CFG.SUPABASE_URL.indexOf("INDSAET") === 0) {
     $("joinErr").textContent = "Quizzen er ikke sat op endnu. config.js mangler Supabase-nøglerne.";
     $("joinBtn").disabled = true;
@@ -231,16 +221,15 @@
 
   $("foot").textContent = CFG.EVENT_NAME || "";
 
-  /* ---------- kode fra QR ---------- */
   var p = new URLSearchParams(location.search);
   if (p.get("kode")) $("code").value = p.get("kode").toUpperCase().slice(0, 4);
 
   /* ---------- login ---------- */
   $("code").addEventListener("input", function () {
     this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+    if (this.value.length === 4) $("nick").focus();
   });
   $("nick").addEventListener("keydown", function (e) { if (e.key === "Enter") join(); });
-  $("code").addEventListener("keydown", function (e) { if (e.key === "Enter") $("nick").focus(); });
   $("joinBtn").addEventListener("click", join);
 
   function join() {
@@ -259,10 +248,7 @@
         if (r.error) throw r.error;
         if (!r.data) { fail("Den kode findes ikke. Tjek storskærmen."); return null; }
         var g = r.data;
-        return sb.from("quiz_players")
-          .insert({ game_id: g.id, nickname: nick })
-          .select("id,total")
-          .single()
+        return sb.from("quiz_players").insert({ game_id: g.id, nickname: nick }).select("id,total").single()
           .then(function (r2) {
             if (r2.error) {
               if (String(r2.error.code) === "23505") { fail("Navnet er taget. Vælg et andet."); return null; }
@@ -270,13 +256,11 @@
             }
             me = { gameId: g.id, playerId: r2.data.id, code: code, nickname: nick, day: g.label || "" };
             localStorage.setItem(LS, JSON.stringify(me));
+            buzz(30);
             enterGame(g.state, 0);
           });
       })
-      .catch(function (e) {
-        console.error(e);
-        fail("Kunne ikke få forbindelse. Tjek nettet og prøv igen.");
-      });
+      .catch(function (e) { console.error(e); fail("Kunne ikke få forbindelse. Tjek nettet og prøv igen."); });
   }
 
   function fail(msg) {
@@ -285,7 +269,7 @@
     $("joinBtn").textContent = "Kom med";
   }
 
-  /* ---------- automatisk tilbage i spillet ---------- */
+  /* ---------- automatisk tilbage ---------- */
   function resume() {
     var raw = localStorage.getItem(LS);
     if (!raw || !sb) return;
@@ -294,12 +278,10 @@
     if (!saved || !saved.playerId) return;
 
     dot(false, "henter din plads");
-
     sb.from("quiz_players").select("id,total,game_id").eq("id", saved.playerId).maybeSingle()
       .then(function (r) {
         if (r.error || !r.data) { localStorage.removeItem(LS); dot(false, "ikke forbundet"); return; }
         me = saved;
-        lastTotal = r.data.total || 0;
         return sb.from("quiz_games").select("state,label").eq("id", saved.gameId).single()
           .then(function (g) {
             if (g.data && g.data.label) me.day = g.data.label;
@@ -309,7 +291,6 @@
       .catch(function () { dot(false, "ikke forbundet"); });
   }
 
-  /* ---------- i spillet ---------- */
   function enterGame(state, total) {
     $("topbar").classList.remove("hidden");
     $("tbName").textContent = me.nickname;
@@ -322,38 +303,29 @@
   function setPoints(n, animate) {
     lastTotal = n;
     $("tbPts").textContent = n;
-    if (animate) {
-      $("tbPts").animate(
-        [{ transform: "scale(1)" }, { transform: "scale(1.22)" }, { transform: "scale(1)" }],
-        { duration: 420, easing: "ease-out" }
-      );
-    }
+    if (animate) $("tbPts").animate(
+      [{ transform: "scale(1)" }, { transform: "scale(1.25)" }, { transform: "scale(1)" }],
+      { duration: 460, easing: "cubic-bezier(.22,1,.36,1)" });
   }
 
   function subscribe() {
     if (ch) sb.removeChannel(ch);
     ch = sb.channel("p:" + me.gameId)
-      .on("postgres_changes",
-        { event: "UPDATE", schema: "public", table: "quiz_games", filter: "id=eq." + me.gameId },
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "quiz_games", filter: "id=eq." + me.gameId },
         function (m) { render(m.new.state); })
-      .on("postgres_changes",
-        { event: "UPDATE", schema: "public", table: "quiz_players", filter: "id=eq." + me.playerId },
-        function (m) { setPoints(m.new.total, true); })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "quiz_players", filter: "id=eq." + me.playerId },
+        function (m) { setPoints(m.new.total, m.new.total !== lastTotal); })
       .subscribe(function (st) {
         dot(st === "SUBSCRIBED", st === "SUBSCRIBED" ? "forbundet" : "forbinder");
         if (st === "SUBSCRIBED") pull();
       });
 
-    // Hvis fanen har ligget i baggrunden, kan en besked være gået tabt.
-    document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) pull();
-    });
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) pull(); });
     setInterval(function () { if (!document.hidden) pull(); }, 15000);
   }
 
-  // Henter sandheden fra databasen. Bruges som sikkerhedsnet.
   function pull() {
-    if (!me) return;
+    if (!me || !sb) return;
     sb.from("quiz_games").select("state").eq("id", me.gameId).single().then(function (r) {
       if (r.data) render(r.data.state);
     });
@@ -367,35 +339,36 @@
     if (!s) return;
 
     if (s.phase === "question") {
-      if (curKey !== s.qkey) {
+      // nonce skifter, hver gang værten starter spørgsmålet. Køres det samme
+      // spørgsmål om, skal et gammelt svar ikke spærre for at svare igen.
+      if (curNonce !== s.nonce) {
+        curNonce = s.nonce;
         curKey = s.qkey;
+        delete answered[s.qkey];
+        locked = false;
         drawQuestion(s);
-      } else if (answered[s.qkey] === undefined) {
-        view("v-q");
-      }
+      } else if (answered[s.qkey] === undefined && !locked) view("v-q");
       return;
     }
 
     clearTick();
 
-    if (s.phase === "reveal" && s.qkey) {
-      drawReveal(s);
-      return;
-    }
+    if (s.phase === "reveal" && s.qkey) { curNonce = s.nonce; drawReveal(s); return; }
 
-    // lobby, pause, stilling: deltageren venter
-    curKey = null;
-    $("waitTitle").textContent = s.phase === "scoreboard" ? "Stillingen er på storskærmen" : "Du er med";
+    curKey = null; curNonce = null; locked = false;
+    $("waitTitle").textContent = s.phase === "scoreboard" ? "Stillingen er oppe" : "Du er med";
     $("waitText").textContent = s.phase === "scoreboard"
-      ? "Kig op. Næste runde starter herinde."
+      ? "Kig op på storskærmen. Næste runde starter herinde."
       : "Kig op på storskærmen. Spørgsmålet kommer her, når runden starter.";
     view("v-wait");
   }
 
   function drawQuestion(s) {
+    locked = false;
     $("qRound").textContent = s.roundTitle || "";
-    $("qCount").textContent = (s.qi + 1) + " af " + s.qn;
+    $("qCount").textContent = (s.qi + 1) + " / " + s.qn;
     $("qText").textContent = s.q;
+    $("timerbar").classList.remove("low");
 
     var box = $("answers");
     box.innerHTML = "";
@@ -403,29 +376,42 @@
       var b = document.createElement("button");
       b.className = "ans";
       b.setAttribute("data-i", i);
-      b.innerHTML = shape(i) + '<span>' + esc(txt) + '</span>';
+      b.innerHTML = shape(i) + "<span>" + esc(txt) + "</span>";
       b.addEventListener("click", function () { pick(i, s); });
       box.appendChild(b);
     });
 
     view("v-q");
 
-    // Tiden tælles fra det øjeblik, skærmen får spørgsmålet.
     t0 = Date.now();
     var lim = (s.seconds || 20) * 1000;
     clearTick();
     tick = setInterval(function () {
       var left = Math.max(0, 1 - (Date.now() - t0) / lim);
       $("qBar").style.transform = "scaleX(" + left + ")";
-      if (left <= 0) clearTick();
-    }, 80);
+      $("timerbar").classList.toggle("low", left < .25);
+      if (left <= 0) { clearTick(); timeUp(s); }
+    }, 70);
+  }
+
+  // Tiden løb ud, uden at der blev svaret. Lås knapperne, så et for sent
+  // tryk ikke registreres som et svar, der alligevel ikke tæller.
+  function timeUp(s) {
+    if (answered[s.qkey] !== undefined) return;
+    locked = true;
+    var nodes = document.querySelectorAll(".ans");
+    for (var k = 0; k < nodes.length; k++) { nodes[k].disabled = true; nodes[k].classList.add("dim"); }
+    $("sentTitle").textContent = "Tiden er gået";
+    $("sentText").textContent = "Du nåede ikke at svare på det her. Næste spørgsmål kommer om lidt.";
+    setTimeout(function () { if (locked) view("v-sent"); }, 500);
   }
 
   function pick(i, s) {
-    if (answered[s.qkey] !== undefined) return;
+    if (answered[s.qkey] !== undefined || locked) return;
     answered[s.qkey] = i;
     var ms = Date.now() - t0;
     clearTick();
+    buzz(20);
 
     var nodes = document.querySelectorAll(".ans");
     for (var k = 0; k < nodes.length; k++) {
@@ -434,57 +420,58 @@
     }
 
     sb.from("quiz_answers").insert({
-      game_id: me.gameId,
-      player_id: me.playerId,
-      qkey: s.qkey,
-      choice: i,
-      ms: Math.min(ms, (s.seconds || 20) * 1000)
+      game_id: me.gameId, player_id: me.playerId, qkey: s.qkey,
+      choice: i, ms: Math.min(ms, (s.seconds || 20) * 1000)
     }).then(function () {});
 
-    setTimeout(function () { view("v-sent"); }, 340);
+    $("sentTitle").textContent = "Svar sendt";
+    $("sentText").textContent = "Hurtige svar giver flere point. Kig op på storskærmen.";
+    setTimeout(function () { view("v-sent"); }, 380);
   }
 
   function drawReveal(s) {
+    locked = false;
     var mine = answered[s.qkey];
     var ok = mine !== undefined && mine === s.correct;
 
     if (mine === undefined) {
-      $("verdict").textContent = "Ingen svar";
+      $("verdict").textContent = "Ikke svaret";
       $("verdict").className = "verdict no";
-      $("gain").textContent = "Du nåede ikke at svare.";
+      $("gain").textContent = "Det rigtige var " + shapeName(s.correct) + ".";
     } else {
       $("verdict").textContent = ok ? "Rigtigt" : "Forkert";
       $("verdict").className = "verdict " + (ok ? "ok" : "no");
       $("gain").textContent = ok ? "" : "Det rigtige var " + shapeName(s.correct) + ".";
+      buzz(ok ? [18, 60, 18] : 40);
     }
     $("rankline").textContent = "";
+    view("v-reveal");
 
-    // Point kommer via realtidsopdatering af egen række lige efter.
     setTimeout(function () {
+      if (!sb || !me) return;
       sb.from("quiz_players").select("total,last_gain,last_key").eq("id", me.playerId).single()
         .then(function (r) {
           if (!r.data) return;
           setPoints(r.data.total, r.data.total !== lastTotal);
-          if (r.data.last_key === s.qkey && r.data.last_gain > 0) {
-            $("gain").textContent = "+" + r.data.last_gain + " point";
-          }
+          if (r.data.last_key === s.qkey && r.data.last_gain > 0) $("gain").textContent = "+" + r.data.last_gain + " point";
+          return sb.from("quiz_players").select("id", { count: "exact", head: true })
+            .eq("game_id", me.gameId).gt("total", r.data.total);
+        })
+        .then(function (c) {
+          if (c && typeof c.count === "number") $("rankline").textContent = "Du ligger nummer " + (c.count + 1);
         });
     }, 700);
-
-    view("v-reveal");
   }
 
   function clearTick() { if (tick) { clearInterval(tick); tick = null; } }
 
   function shape(i) {
-    var c = "#fff";
-    if (i === 0) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 3 22 21H2Z" fill="' + c + '"/></svg>';
-    if (i === 1) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 2 22 12 12 22 2 12Z" fill="' + c + '"/></svg>';
-    if (i === 2) return '<svg class="shape" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="' + c + '"/></svg>';
-    return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="' + c + '"/></svg>';
+    if (i === 0) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 3 22 21H2Z" fill="#fff"/></svg>';
+    if (i === 1) return '<svg class="shape" viewBox="0 0 24 24"><path d="M12 2 22 12 12 22 2 12Z" fill="#fff"/></svg>';
+    if (i === 2) return '<svg class="shape" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="#fff"/></svg>';
+    return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#fff"/></svg>';
   }
   function shapeName(i) { return ["trekanten", "romben", "cirklen", "firkanten"][i] || "?"; }
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
 
   resume();
 })();

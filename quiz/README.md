@@ -92,3 +92,20 @@ Facit vises automatisk, når tiden løber ud, eller når alle har svaret. Du kan
 ## Efter kurserne
 
 Stillingen kan hentes som fil med **Gem stillingen som fil** på stillingsskærmen. Nederst i `supabase-setup.sql` står en linje, du kan køre for at slette gamle dage inklusive deltagere og svar.
+
+
+---
+
+## Nyt i denne version
+
+**Dagsoversigt som forside.** Værtsskærmen åbner nu på en oversigt over alle dage. Hver dag viser sin kode og hvor mange der er kommet ind. Du kan starte, fortsætte eller nulstille hver dag for sig.
+
+**Skift dag.** Knappen oppe til højre, eller tasten `Q`, fører dig tilbage til oversigten uden at slette noget.
+
+**Fortryd.** Under en runde ruller `←` det viste spørgsmål tilbage. På facitskærmen hedder den "Kør om" og nulstiller pointene for det spørgsmål, så I kan tage det igen. På et spørgsmål hedder den "Forrige" og går et spørgsmål tilbage. Deltagernes telefoner følger med og låser op igen.
+
+**Nulstil dagen.** På oversigten. Sletter alle deltagere og alle point for netop den dag. Koden bliver den samme, så QR-koden på slidet stadig virker. De andre dage røres ikke.
+
+**Tiden er gået.** Svarer en deltager ikke inden for tiden, låses knapperne, og de får besked i stedet for at kunne trykke forgæves.
+
+**Testdag.** Ligger for sig selv nederst på oversigten, så du ikke kommer til at åbne en rigtig kursusdag, når du øver dig.
