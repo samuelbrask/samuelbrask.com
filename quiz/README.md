@@ -12,6 +12,7 @@ Storskærm på projektoren, deltagerne svarer på deres egen skærm, og pointene
 | `config.js` | Dine to Supabase-nøgler, adressen til QR-koden og listen over dage. |
 | `style.css` | Farver og typografi. Brandfarverne står øverst. |
 | `supabase-setup.sql` | Køres én gang i Supabase for at oprette tabellerne. |
+| `qr.html` | Værktøj til at lave QR-koder til slides, med Intega-mærket i midten. |
 
 Facit ligger kun i `questions.js`, som deltagernes side aldrig henter. Spørgsmål og svarmuligheder sendes uden det rigtige svar, så der er intet at finde i kildekoden.
 
@@ -109,3 +110,18 @@ Stillingen kan hentes som fil med **Gem stillingen som fil** på stillingsskærm
 **Tiden er gået.** Svarer en deltager ikke inden for tiden, låses knapperne, og de får besked i stedet for at kunne trykke forgæves.
 
 **Testdag.** Ligger for sig selv nederst på oversigten, så du ikke kommer til at åbne en rigtig kursusdag, når du øver dig.
+
+
+---
+
+## QR-koder til slides
+
+Åbn `qr.html`, eller klik kortet på værtsskærmens forside.
+
+Vælg dagen, skriv dagens kode, og hent PNG'en. QR-koden peger direkte på dagens quiz, så deltagerne slipper for at taste koden og går lige til kaldenavnet.
+
+**Lås koderne fast, før du bygger slides.** På hvert dagskort er der en knap, der hedder "Skift kode". Sæt fx `LEDR`, `AALB`, `CBY1` og `CBY2`. Så kender du koderne på forhånd og kan lave alle fire QR-koder i ét hug, uden at have kørt en eneste dag.
+
+Koden overlever nulstilling, så QR-koden på slidet virker stadig, efter du har testet.
+
+Både logo- og kodevarianten er afkodet og virker ned til 250 pixel. Scan alligevel selv én gang, når den sidder i præsentationen. Sæt den ind mindst 5 cm bred på et slide.

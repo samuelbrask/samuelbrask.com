@@ -1,11 +1,16 @@
 /* ============================================================
    Spørgsmål og facit
    ------------------------------------------------------------
-   Denne fil hentes KUN af host.html. Deltagernes side får
-   spørgsmål og svarmuligheder sendt uden facit, så der ikke
-   er noget at finde i kildekoden på telefonen.
+   Bygget på webinaret "AI Fundamentals — forstå, vurder og brug
+   AI ansvarligt". Alle svar kan findes i Samuels del af dækket.
+   Compliance-delen er bevidst holdt ude: intet spørgsmål her
+   afhænger af, hvad Intega har besluttet.
 
-   Sadan retter du:
+   Denne fil hentes KUN af host.html. Deltagernes side får
+   spørgsmål og svarmuligheder sendt uden facit, så der ikke er
+   noget at finde i kildekoden på telefonen.
+
+   Sådan retter du:
    - "correct" er nummeret på det rigtige svar, 0 = første.
    - "seconds" er svartiden. Udelad den, så bruges 20.
    - Slet eller tilføj frit. Runderne behøver ikke være lige lange.
@@ -14,169 +19,193 @@
 window.QUIZ_ROUNDS = [
   {
     title: "Runde 1 · Maskinen",
-    subtitle: "Hvad er det egentlig, den gør",
+    subtitle: "Sådan finder den sit svar",
     questions: [
       {
         q: "Hvad står LLM for?",
         a: ["Large Language Model", "Logical Learning Machine", "Linked Layer Memory", "Live Language Mapping"],
-        correct: 0,
-        seconds: 20
+        correct: 0, seconds: 15
       },
       {
-        q: "Hvordan bestemmer en sprogmodel det næste ord?",
-        a: ["Den slår op i en database", "Den beregner hvad der er mest sandsynligt", "Den søger på nettet hver gang", "Den følger regler skrevet af udviklere"],
-        correct: 1,
-        seconds: 20
+        q: "Hvad blev en sprogmodel sammenlignet med på webinaret?",
+        a: ["Et opslagsværk", "En avanceret autocomplete", "En lommeregner", "En søgemaskine"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Hvad er forskellen på automatisering og AI?",
-        a: ["Ingen, det er samme ting", "Automatisering følger faste regler, AI vurderer", "AI er hurtigere", "Automatisering kræver internet"],
-        correct: 1,
-        seconds: 25
+        q: "Hvordan finder modellen det næste stykke tekst?",
+        a: ["Den slår op i en database", "Den vælger det mest sandsynlige næste stykke", "Den søger på nettet hver gang", "Den følger regler skrevet af udviklere"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Hvorfor kan to ens prompts give to forskellige svar?",
-        a: ["Serveren er overbelastet", "Der er tilfældighed indbygget i modellen", "Den husker forrige samtale", "Det kan den ikke"],
-        correct: 1,
-        seconds: 20
+        q: "Hvad gemmer modellen fra sin træning?",
+        a: ["Selve dokumenterne", "Mønstre i teksten", "En liste over kilder", "Billeder af siderne"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Hvad kalder man det, når modellen finder på noget, der lyder rigtigt?",
-        a: ["En fejl 404", "En hallucination", "Et bias", "En timeout"],
-        correct: 1,
-        seconds: 15
+        // Bedste gæt. Står ikke på slides, men forklarer en fejl alle har set.
+        q: "Bedste gæt: du beder en model tælle bogstaver i et ord. Hvorfor tager den ofte fejl?",
+        a: ["Den kan ikke tælle", "Den ser teksten i stumper, ikke som enkelte bogstaver", "Ordet er for langt", "Den gætter altid på fem"],
+        correct: 1, seconds: 30
       },
       {
-        q: "Hvad betyder det, at en model har en videnscutoff?",
-        a: ["Den stopper efter et antal ord", "Den kender ikke noget efter en bestemt dato", "Den lukker ned om natten", "Den kan kun svare på dansk"],
-        correct: 1,
-        seconds: 20
+        q: "Hvad betyder en models skæringsdato?",
+        a: ["Den lukker ned efter et antal svar", "Den kender ikke noget efter en bestemt dato", "Den kan kun svare i arbejdstiden", "Den glemmer samtalen efter et døgn"],
+        correct: 1, seconds: 20
+      },
+      {
+        q: "Hvorfor kan det samme spørgsmål give to forskellige svar?",
+        a: ["Serveren er overbelastet", "Den planlægger ikke svaret, men finder det undervejs", "Den husker den forrige samtale", "Det kan det ikke"],
+        correct: 1, seconds: 25
+      },
+      {
+        // Bedste gæt. Forklarer hvorfor svar bliver ringere i lange samtaler.
+        q: "Bedste gæt: hvorfor bliver svarene tit ringere i en meget lang samtale?",
+        a: ["Modellen bliver træt", "Der er grænser for, hvor meget den kan holde i hovedet ad gangen", "Internettet bliver langsommere", "Den skifter til en dårligere model"],
+        correct: 1, seconds: 30
       }
     ]
   },
   {
-    title: "Runde 2 · Kvalitetssikring",
-    subtitle: "Hvordan du får noget brugbart ud",
+    title: "Runde 2 · Fejlene",
+    subtitle: "Det du skal kunne genkende",
     questions: [
       {
-        q: "Hvad gælder oftest for en god prompt?",
-        a: ["Den er kort og åben", "Den giver rolle, opgave, kontekst og ønsket format", "Den er skrevet på engelsk", "Den indeholder mange spørgsmålstegn"],
-        correct: 1,
-        seconds: 25
+        q: "Hvor sikker lyder modellen, når den tager fejl?",
+        a: ["Tydeligt mere usikker", "Præcis lige så sikker som når den har ret", "Den siger selv fra", "Den skriver kortere svar"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Modellen giver et svar, du er i tvivl om. Hvad er første skridt?",
-        a: ["Bed den om at tvivle på sig selv og begrunde", "Stil samme spørgsmål igen", "Prøv et andet værktøj", "Accepter det, den er trænet på meget data"],
-        correct: 0,
-        seconds: 25
+        q: "Hvilken af de fem fejltyper blev kaldt den farligste hos os?",
+        a: ["Hallucination", "Plausibelt men forkert", "Ja-hat", "Skråsikker regnefejl"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvad er det sværeste at opdage i et AI-svar?",
-        a: ["Stavefejl", "Det, der er udeladt", "Forkert formatering", "For lang tekst"],
-        correct: 1,
-        seconds: 20
+        q: "Hvad er en ja-hat?",
+        a: ["Et svar der er for langt", "Den bekræfter din antagelse, fordi du spurgte ledende", "Et opdigtet citat", "En forældet sats"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Du beder om et kundebrev og får noget stift og generisk. Hvad virker bedst?",
-        a: ["Skriv det selv", "Giv den et eksempel på et brev, du selv er glad for", "Bed den skrive kortere", "Bed den være mere kreativ"],
-        correct: 1,
-        seconds: 25
+        // Bedste gæt. Ja-hatten sat på spidsen, og et selvtjek folk kan lave i pausen.
+        q: "Bedste gæt: modellen har ret, men du skriver \"det er forkert\". Hvad sker der oftest?",
+        a: ["Den holder fast i sit svar", "Den giver efter og ændrer svaret", "Den beder om en kilde", "Den svarer ikke"],
+        correct: 1, seconds: 30
       },
       {
-        q: "Hvornår bør du IKKE bruge et AI-svar direkte?",
-        a: ["Når det skal videre til en kunde uden at du har læst det", "Når du brainstormer", "Når du oversætter til dig selv", "Når du opsummerer dine egne noter"],
-        correct: 0,
-        seconds: 20
+        q: "I ferieberegner-eksemplet henviste svaret til Ferielovens § 47b. Hvad var problemet?",
+        a: ["Paragraffen var forældet", "Paragraffen findes ikke", "Den stod i den forkerte lov", "Der manglede et stykke-nummer"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvad gør mest for kvaliteten af svaret?",
-        a: ["At vælge den dyreste model", "At give den den kontekst, kun du har", "At skrive med store bogstaver", "At stille spørgsmålet på engelsk"],
-        correct: 1,
-        seconds: 20
+        q: "En BBC-journalist fik chatbots til at kalde ham verdensmester i hotdog-spisning. Hvorfor hoppede de på?",
+        a: ["Han hackede systemet", "Hans egen side var den eneste kilde om emnet", "Han betalte for placeringen", "Han skrev det på mange sprog"],
+        correct: 1, seconds: 25
+      },
+      {
+        q: "Hvilken af de tre usynlige fejl handler om det, der IKKE står i svaret?",
+        a: ["Bias", "Tone", "Det udeladte", "Hallucination"],
+        correct: 2, seconds: 20
+      },
+      {
+        // Bedste gæt. Hvorfor danske svar er svagere end engelske.
+        q: "Bedste gæt: hvilket sprog er de store modeller trænet mest på?",
+        a: ["Engelsk", "Kinesisk", "Spansk", "Det er ligeligt fordelt"],
+        correct: 0, seconds: 25
       }
     ]
   },
   {
-    title: "Runde 3 · Ansvar og data",
-    subtitle: "Grænserne, vi arbejder indenfor",
+    title: "Runde 3 · Kvalitetssikring",
+    subtitle: "Sådan vurderer du et svar",
     questions: [
       {
-        q: "Må du indsætte kundedata i et AI-værktøj?",
-        a: ["Ja, hvis du sletter det bagefter", "Kun i værktøjer, Intega har godkendt", "Ja, hvis det er anonymiseret nok", "Aldrig under nogen omstændigheder"],
-        correct: 1,
-        seconds: 25
+        q: "Hvad er en sprogmodel god til, og hvad skal altid tjekkes?",
+        a: ["God til fakta, tjek sproget", "God til sprog, tjek fakta", "God til begge dele", "Hverken eller"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Du finder et nyt AI-værktøj, der løser en opgave perfekt. Hvad gør du?",
-        a: ["Tager det i brug og fortæller det videre", "Spørger, før du bruger det til noget med data", "Bruger det kun til private opgaver", "Venter til nogen spørger"],
-        correct: 1,
-        seconds: 25
+        q: "De to spørgsmål i risikomodellen er: hvad koster det, hvis det er forkert, og hvad mere?",
+        a: ["Hvor lang tid har jeg?", "Kan jeg selv vurdere det?", "Hvilket værktøj brugte jeg?", "Hvor mange har læst det?"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvad kræver EU AI Act artikel 4 af os?",
-        a: ["At vi registrerer alle prompts", "At medarbejdere har tilstrækkelig AI-kompetence", "At AI kun bruges af IT", "At al AI-brug godkendes af ledelsen"],
-        correct: 1,
-        seconds: 25
+        q: "Hvornår skal du stoppe og få en ekspert ind over?",
+        a: ["Når svaret er meget langt", "Når konsekvensen er høj, og du ikke selv kan gennemskue det", "Hver eneste gang", "Når du bruger et nyt værktøj"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvem er ansvarlig for det, du sender ud med hjælp fra AI?",
-        a: ["Leverandøren af værktøjet", "Dig", "Compliance", "Den, der modtager det"],
-        correct: 1,
-        seconds: 15
+        q: "Hvad blev der advaret mod, når man vil kvalitetssikre et svar?",
+        a: ["At læse det højt", "At bede modellen tjekke sit eget svar", "At bede om mellemregninger", "At spørge på dansk"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvad bør du altid vide om et værktøj, før du skriver noget ind i det?",
-        a: ["Hvad det koster", "Om det gemmer det, du skriver", "Hvem der har lavet det", "Hvor mange der bruger det"],
-        correct: 1,
-        seconds: 20
+        q: "Hvilken sætning virker mod skråsikre regnefejl?",
+        a: ["Skriv det kortere", "Vis dine mellemregninger trin for trin", "Vær mere kreativ", "Svar kun med tal"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Er du i tvivl om, hvorvidt noget er i orden. Hvad er reglen i dag?",
-        a: ["Prøv og se", "Spørg en gang for meget frem for en gang for lidt", "Spørg din nærmeste kollega", "Lad være med at bruge AI"],
-        correct: 1,
-        seconds: 20
+        // Bedste gæt. Den vigtigste vane: giv den det, kun du ved.
+        q: "Bedste gæt: hvad løfter kvaliteten af et svar mest?",
+        a: ["At vælge den dyreste model", "At give den den baggrund, kun du kender", "At skrive på engelsk", "At stille spørgsmålet flere gange"],
+        correct: 1, seconds: 30
+      },
+      {
+        q: "Hvem står med ansvaret for et AI-genereret svar, der bliver sendt videre?",
+        a: ["Leverandøren af værktøjet", "Den der sender det", "Modtageren", "Ingen, det var AI'en"],
+        correct: 1, seconds: 15
+      },
+      {
+        // Bedste gæt. Viser at den ikke er tilfældig, men gengiver mønstre.
+        q: "Bedste gæt: du beder om et tilfældigt tal mellem 1 og 100. Hvad sker der?",
+        a: ["Den vælger helt tilfældigt", "Den lander på de samme få tal igen og igen", "Den nægter", "Den vælger altid 1 eller 100"],
+        correct: 1, seconds: 30
       }
     ]
   },
   {
-    title: "Runde 4 · Dagen i dag",
-    subtitle: "Det, vi lige har været igennem",
+    title: "Runde 4 · AI eller automatisering",
+    subtitle: "Hvornår AI slet ikke er svaret",
     questions: [
       {
-        q: "Hvad er en Gem bedst til?",
-        a: ["At gemme filer", "At genbruge den samme opgave med fast opsætning", "At søge på nettet", "At dele samtaler med kolleger"],
-        correct: 1,
-        seconds: 20
+        q: "Opgaven følger faste regler, som en kollega kunne følge uden at tænke. Hvad er den?",
+        a: ["AI", "Automatisering", "Begge dele", "Kan ikke afgøres"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Hvornår giver Deep Research mest mening?",
-        a: ["Når du skal have et hurtigt svar", "Når du skal have flere kilder samlet og vurderet", "Når du skriver en mail", "Når du oversætter"],
-        correct: 1,
-        seconds: 20
+        q: "I månedsrapport-casen med fire trin: hvor mange af trinene skulle slet ikke bruge AI?",
+        a: ["Ingen", "Ét", "To", "Alle fire"],
+        correct: 2, seconds: 25
       },
       {
-        q: "Hvad er det første, du bør gøre, når du vil bruge AI på en opgave?",
-        a: ["Åbne værktøjet", "Være skarp på, hvad et godt resultat ser ud som", "Finde den rigtige model", "Spørge en kollega"],
-        correct: 1,
-        seconds: 25
+        q: "Svaret skal være præcis ens hver gang. Hvad vælger du?",
+        a: ["AI, den er hurtigere", "Reglen, for AI giver ikke identiske svar", "AI med en fast prompt", "Det er lige meget"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvilken opgavetype egner sig dårligst til AI lige nu?",
-        a: ["Første udkast til en tekst", "Beslutninger, hvor ansvaret ikke kan placeres", "Opsummering af et møde", "Oversættelse"],
-        correct: 1,
-        seconds: 25
+        q: "Hvad er tommelfingerreglen for, om en opgave egner sig til AI?",
+        a: ["Om den tager lang tid", "Om en medarbejder ville skulle tænke for at løse den", "Om den gentages hver måned", "Om den findes i et system"],
+        correct: 1, seconds: 25
       },
       {
-        q: "Hvad er det bedste mål for, om AI hjælper dig?",
-        a: ["Hvor mange prompts du sender", "Om du kommer hurtigere til noget, du selv står inde for", "Hvor lange svar du får", "Hvor mange værktøjer du bruger"],
-        correct: 1,
-        seconds: 25
+        q: "Både AI og en regel kan løse trinnet. Hvad blev anbefalet?",
+        a: ["AI, det er mere fleksibelt", "Reglen, for den fejler ikke", "Kast terning", "Byg begge dele"],
+        correct: 1, seconds: 20
       },
       {
-        q: "Hvad sker der efter i dag?",
-        a: ["Ingenting, det var det", "Build Day og Show and Tell", "Et nyt webinar", "En test I skal bestå"],
-        correct: 1,
-        seconds: 15
+        // Bedste gæt. Sætter tempoet i perspektiv, uden at være trivia.
+        q: "Bedste gæt: hvor lang tid tog det ChatGPT at nå 100 millioner brugere?",
+        a: ["Cirka to måneder", "Cirka et år", "Cirka tre år", "Cirka fem år"],
+        correct: 0, seconds: 25
+      },
+      {
+        q: "Hvad er det rigtige første spørgsmål, når man overvejer AI til en opgave?",
+        a: ["Kan AI klare det her?", "Hvad bør det her egentlig være?", "Hvilken model er bedst?", "Hvad koster det?"],
+        correct: 1, seconds: 25
+      },
+      {
+        // Bedste gæt. Den dyreste fejl er ikke den, man kan se.
+        q: "Bedste gæt: hvad er den dyreste AI-fejl i en virksomhed?",
+        a: ["At bruge AI, hvor en regel var nok", "At overse, hvor AI kunne have flyttet noget", "At vælge det forkerte værktøj", "At betale for mange licenser"],
+        correct: 1, seconds: 30
       }
     ]
   }

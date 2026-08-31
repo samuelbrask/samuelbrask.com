@@ -243,7 +243,7 @@
     $("joinBtn").disabled = true;
     $("joinBtn").textContent = "Et øjeblik";
 
-    sb.from("quiz_games").select("id,label,state").eq("code", code).maybeSingle()
+    sb.from("quiz_games").select("id,code,label,state").eq("code", code).maybeSingle()
       .then(function (r) {
         if (r.error) throw r.error;
         if (!r.data) { fail("Den kode findes ikke. Tjek storskærmen."); return null; }
@@ -251,7 +251,7 @@
         return sb.from("quiz_players").insert({ game_id: g.id, nickname: nick }).select("id,total").single()
           .then(function (r2) {
             if (r2.error) {
-              if (String(r2.error.code) === "23505") { fail("Navnet er taget. Vælg et andet."); return null; }
+              if (String(r2.error.code) === "23505") { nameTaken(g, nick); return null; }
               throw r2.error;
             }
             me = { gameId: g.id, playerId: r2.data.id, code: code, nickname: nick, day: g.label || "" };
@@ -263,7 +263,31 @@
       .catch(function (e) { console.error(e); fail("Kunne ikke få forbindelse. Tjek nettet og prøv igen."); });
   }
 
+  // Navnet findes allerede i dagen. Enten er det en anden, eller også er det
+  // den samme person, som har mistet sin browserdata. Vi lader dem vælge selv.
+  function nameTaken(g, nick) {
+    $("joinBtn").disabled = false;
+    $("joinBtn").textContent = "Kom med";
+    $("joinErr").innerHTML =
+      'Navnet <b>' + esc(nick) + "</b> er allerede i brug i dag." +
+      '<div style="margin-top:12px"><button class="btn-ghost" id="itsMe">Det er mig, luk mig ind igen</button></div>' +
+      '<div style="margin-top:8px;color:var(--ink-faint);font-size:12px">Er det en anden, så vælg et andet navn.</div>';
+    $("itsMe").addEventListener("click", function () {
+      this.disabled = true;
+      this.textContent = "Et øjeblik";
+      sb.from("quiz_players").select("id,total").eq("game_id", g.id).eq("nickname", nick).maybeSingle()
+        .then(function (r) {
+          if (!r.data) { fail("Kunne ikke finde dig. Prøv et andet navn."); return; }
+          me = { gameId: g.id, playerId: r.data.id, code: g.code || "", nickname: nick, day: g.label || "" };
+          localStorage.setItem(LS, JSON.stringify(me));
+          buzz(30);
+          enterGame(g.state, r.data.total || 0);
+        });
+    });
+  }
+
   function fail(msg) {
+    $("joinErr").innerHTML = "";
     $("joinErr").textContent = msg;
     $("joinBtn").disabled = false;
     $("joinBtn").textContent = "Kom med";

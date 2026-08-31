@@ -282,6 +282,13 @@
       <div class="daygrid" id="dayGrid"></div>
 
       <div class="sect-label">Til dig selv</div>
+      <div class="daygrid" style="margin-bottom:14px">
+        <a class="daycard" href="qr.html" style="text-decoration:none;color:inherit;display:block">
+          <h3>QR-koder til slides</h3>
+          <div class="state"><span>Lav en QR-kode pr. dag med Intega-mærket i midten</span></div>
+          <div class="acts"><span class="btn-ghost" style="display:inline-block">Åbn værktøjet</span></div>
+        </a>
+      </div>
       <div class="daygrid" id="testGrid"></div>
     </div>
   </section>
@@ -360,6 +367,7 @@
 
   var CFG = window.QUIZ_CONFIG || {};
   var ROUNDS = window.QUIZ_ROUNDS || [];
+  var LS = "intega_quiz_host_v2";
   var OFFLINE = new URLSearchParams(location.search).get("offline") === "1";
 
   var sb = null, ch = null;
@@ -412,6 +420,29 @@
     s.querySelector("[data-yes]").onclick = function () { close(); onOk(); };
     s.onclick = function (e) { if (e.target === s) close(); };
     s.querySelector("[data-yes]").focus();
+  }
+
+  function promptBox(title, text, value, onOk) {
+    var s = document.createElement("div");
+    s.className = "scrim";
+    s.innerHTML =
+      '<div class="dialog"><h3>' + esc(title) + "</h3><p>" + esc(text) + "</p>" +
+      '<input class="field" id="pbInput" maxlength="4" style="text-transform:uppercase;letter-spacing:.3em;text-align:center;font-family:var(--display);font-weight:800;margin-bottom:20px" value="' + esc(value || "") + '">' +
+      '<div class="row2"><button class="btn-ghost" data-no>Fortryd</button>' +
+      '<button class="btn-ghost" data-yes>Gem koden</button></div></div>';
+    document.body.appendChild(s);
+    function close() { s.remove(); document.removeEventListener("keydown", onKey, true); }
+    function onKey(e) {
+      if (e.key === "Escape") { e.stopPropagation(); close(); }
+      if (e.key === "Enter") { e.stopPropagation(); var v = s.querySelector("#pbInput").value; close(); onOk(v); }
+    }
+    document.addEventListener("keydown", onKey, true);
+    s.querySelector("[data-no]").onclick = close;
+    s.querySelector("[data-yes]").onclick = function () { var v = s.querySelector("#pbInput").value; close(); onOk(v); };
+    s.onclick = function (e) { if (e.target === s) close(); };
+    var inp = s.querySelector("#pbInput");
+    inp.addEventListener("input", function () { this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4); });
+    inp.focus(); inp.select();
   }
 
   /* ================= opsætning ================= */
@@ -485,14 +516,35 @@
           '<div class="state">' + state + "</div>" +
           '<div class="acts">' +
             '<button class="btn-ghost" data-go>' + (g ? "Fortsæt" : "Start dagen") + "</button>" +
+            (g ? '<button class="btn-ghost" data-code>Skift kode</button>' : "") +
             (g ? '<button class="btn-ghost btn-danger" data-reset>Nulstil</button>' : "") +
           "</div>";
         d.querySelector("[data-go]").onclick = function () { g ? openGame(g) : newGame(label); };
         if (g) d.querySelector("[data-reset]").onclick = function () { askReset(g); };
+        if (g) d.querySelector("[data-code]").onclick = function () { askCode(g); };
         box.appendChild(d);
       });
       if (!pair[1].length) box.innerHTML = '<div class="empty">Ingen dage i listen. Ret <code>DAYS</code> i config.js.</div>';
     });
+  }
+
+  function askCode(g) {
+    promptBox(
+      "Kode for " + g.label,
+      "Fire tegn, bogstaver eller tal. Vælg noget, du kan huske, så du kan lave QR-koden til slidet, før dagen går i gang. Deltagernes point røres ikke.",
+      g.code,
+      function (val) {
+        var c = val.trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4);
+        if (c.length !== 4) { alert("Koden skal være præcis fire tegn."); return; }
+        if (c === g.code) return;
+        if (OFFLINE || !sb) return;
+        sb.from("quiz_games").update({ code: c }).eq("id", g.id).then(function (r) {
+          if (r.error) { alert("Den kode er allerede brugt af en anden dag. Vælg en anden."); return; }
+          if (G && G.id === g.id) { G.code = c; $("codeOut").textContent = c; drawQR(); localStorage.setItem(LS, JSON.stringify(G)); }
+          loadDays();
+        });
+      }
+    );
   }
 
   function askReset(g) {
@@ -539,6 +591,7 @@
 
   function openGame(g) {
     G = { id: g.id, code: g.code, label: g.label };
+    try { localStorage.setItem(LS, JSON.stringify(G)); } catch (e) {}
     players = {}; answers = {}; doneRounds = {};
     if (OFFLINE) { openLobby(); return; }
     sb.from("quiz_players").select("id,nickname,total").eq("game_id", G.id).then(function (r) {
