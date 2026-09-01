@@ -71,6 +71,12 @@
   }
   .daycard.live::before { background: linear-gradient(180deg, var(--mint), var(--orange)); }
   .daycard.test { border-style: dashed; }
+  .daycard.dublet { border-color: rgba(240,18,69,.45); }
+  .daycard .warn {
+    background: rgba(240,18,69,.14); border: 1px solid rgba(240,18,69,.34);
+    border-radius: 10px; padding: 9px 12px; font-size: 12px; color: #ffc2ce;
+    margin: 0 0 10px; line-height: 1.5;
+  }
 
   .daycard h3 { font-size: 19px; margin-bottom: 8px; }
   .daycard .state { font-size: 13px; color: var(--ink-dim); min-height: 22px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -113,7 +119,10 @@
     transition: background .16s, border-color .16s, transform .16s var(--ease);
   }
   .roundbtn:hover { background: var(--glass-lift); border-color: var(--mint); transform: translateY(-2px); }
+  .roundbtn { display: inline-flex; align-items: baseline; gap: 10px; }
+  .roundbtn .mins { font-size: 11px; color: var(--ink-faint); font-weight: 600; letter-spacing: .06em; }
   .roundbtn.done { color: var(--ink-faint); border-style: dashed; }
+  .roundsum { width: 100%; font-size: 12px; color: var(--ink-faint); letter-spacing: .04em; margin-top: 4px; }
   .roundbtn.done::after { content: " ✓"; color: var(--mint); }
 
   .players { margin-top: 30px; min-height: 0; overflow-y: auto; padding-right: 6px; }
@@ -366,7 +375,11 @@
   "use strict";
 
   var CFG = window.QUIZ_CONFIG || {};
-  var ROUNDS = window.QUIZ_ROUNDS || [];
+  var ALL_ROUNDS = window.QUIZ_ROUNDS || [];
+  var PER = parseInt(CFG.QUESTIONS_PER_ROUND, 10) || 0;
+  var ROUNDS = ALL_ROUNDS.map(function (r) {
+    return PER > 0 ? { title: r.title, subtitle: r.subtitle, questions: r.questions.slice(0, PER) } : r;
+  });
   var LS = "intega_quiz_host_v2";
   var OFFLINE = new URLSearchParams(location.search).get("offline") === "1";
 
@@ -484,15 +497,21 @@
   function loadDays() {
     if (OFFLINE || !ready) { renderDays({}); return; }
     dot(false, "henter dage");
-    sb.from("quiz_games").select("id,code,label").then(function (r) {
+    sb.from("quiz_games").select("id,code,label,created_at").order("created_at").then(function (r) {
+      // Der KAN ligge flere spil med samme dag, hvis "Start dagen" er trykket
+      // to gange. Vi viser dem alle, så en tom dublet ikke skjuler den rigtige.
       var byLabel = {};
-      (r.data || []).forEach(function (g) { byLabel[g.label] = g; });
+      (r.data || []).forEach(function (g) {
+        (byLabel[g.label] = byLabel[g.label] || []).push(g);
+      });
       var ids = (r.data || []).map(function (g) { return g.id; });
       if (!ids.length) { renderDays(byLabel); dot(false, "klar"); return; }
       sb.from("quiz_players").select("game_id").in("game_id", ids).then(function (p) {
         var n = {};
         (p.data || []).forEach(function (x) { n[x.game_id] = (n[x.game_id] || 0) + 1; });
-        Object.keys(byLabel).forEach(function (k) { byLabel[k].n = n[byLabel[k].id] || 0; });
+        Object.keys(byLabel).forEach(function (k) {
+          byLabel[k].forEach(function (g) { g.n = n[g.id] || 0; });
+        });
         renderDays(byLabel);
         dot(false, "klar");
       });
@@ -503,27 +522,43 @@
     [["dayGrid", REAL_DAYS, false], ["testGrid", TEST_DAYS, true]].forEach(function (pair) {
       var box = $(pair[0]);
       box.innerHTML = "";
-      pair[1].forEach(function (label, i) {
-        var g = byLabel[label];
+      var idx = 0;
+      pair[1].forEach(function (label) {
+        var list = byLabel[label] || [];
+        var dublet = list.length > 1;
+
+        if (!list.length) {
+          box.appendChild(card(label, null, false, idx++, pair[2]));
+          return;
+        }
+        list.forEach(function (g) {
+          box.appendChild(card(label, g, dublet, idx++, pair[2]));
+        });
+      });
+
+      function card(label, g, dublet, i, isTest) {
         var d = document.createElement("div");
-        d.className = "daycard" + (g ? " live" : "") + (pair[2] ? " test" : "");
+        d.className = "daycard" + (g ? " live" : "") + (isTest ? " test" : "") + (dublet ? " dublet" : "");
         d.style.animationDelay = (i * 55) + "ms";
         var state = g
           ? '<span class="code">' + esc(g.code) + "</span><span>" + (g.n || 0) + (g.n === 1 ? " deltager" : " deltagere") + "</span>"
           : "<span>Ikke startet</span>";
         d.innerHTML =
           "<h3>" + esc(label) + "</h3>" +
+          (dublet ? '<div class="warn">Der findes flere spil for denne dag. Behold det med deltagere, og slet det tomme.</div>' : "") +
           '<div class="state">' + state + "</div>" +
           '<div class="acts">' +
             '<button class="btn-ghost" data-go>' + (g ? "Fortsæt" : "Start dagen") + "</button>" +
             (g ? '<button class="btn-ghost" data-code>Skift kode</button>' : "") +
             (g ? '<button class="btn-ghost btn-danger" data-reset>Nulstil</button>' : "") +
+            (dublet ? '<button class="btn-ghost btn-danger" data-del>Slet dette spil</button>' : "") +
           "</div>";
         d.querySelector("[data-go]").onclick = function () { g ? openGame(g) : newGame(label); };
         if (g) d.querySelector("[data-reset]").onclick = function () { askReset(g); };
         if (g) d.querySelector("[data-code]").onclick = function () { askCode(g); };
-        box.appendChild(d);
-      });
+        if (dublet) d.querySelector("[data-del]").onclick = function () { askDelete(g); };
+        return d;
+      }
       if (!pair[1].length) box.innerHTML = '<div class="empty">Ingen dage i listen. Ret <code>DAYS</code> i config.js.</div>';
     });
   }
@@ -543,6 +578,22 @@
           if (G && G.id === g.id) { G.code = c; $("codeOut").textContent = c; drawQR(); localStorage.setItem(LS, JSON.stringify(G)); }
           loadDays();
         });
+      }
+    );
+  }
+
+  function askDelete(g) {
+    confirmBox(
+      "Slet spillet med koden " + g.code + "?",
+      "Dette sletter hele spillet, ikke kun deltagerne. Der er " + (g.n || 0) + " deltager(e) i det. Handlingen kan ikke fortrydes.",
+      "Ja, slet det", true,
+      function () {
+        if (OFFLINE || !sb) return;
+        dot(false, "sletter");
+        sb.from("quiz_answers").delete().eq("game_id", g.id)
+          .then(function () { return sb.from("quiz_players").delete().eq("game_id", g.id); })
+          .then(function () { return sb.from("quiz_games").delete().eq("id", g.id); })
+          .then(function () { loadDays(); dot(false, "klar"); });
       }
     );
   }
@@ -579,11 +630,20 @@
   function newGame(label) {
     if (OFFLINE) { G = { id: "offline", code: "TEST", label: label }; openLobby(); return; }
     if (!ready) return;
+    // Findes dagen allerede, åbner vi den i stedet for at lave en dublet.
+    sb.from("quiz_games").select("id,code,label").eq("label", label).limit(1).maybeSingle()
+      .then(function (r) {
+        if (r.data) { openGame(r.data); return; }
+        createGame(label);
+      });
+  }
+
+  function createGame(label) {
     var c = code4();
     sb.from("quiz_games").insert({ code: c, label: label, state: { phase: "lobby" } })
       .select("id,code,label").single()
       .then(function (r) {
-        if (r.error) { if (String(r.error.code) === "23505") return newGame(label); throw r.error; }
+        if (r.error) { if (String(r.error.code) === "23505") return createGame(label); throw r.error; }
         openGame(r.data);
       })
       .catch(function (e) { console.error(e); alert("Kunne ikke oprette dagen. Tjek nøglerne i config.js og at SQL-filen er kørt."); });
@@ -622,6 +682,28 @@
   }
 
   /* ================= lobby ================= */
+  function refreshPlayers(done) {
+    if (OFFLINE || !sb || !G || G.id === "offline") { done && done(); return; }
+    sb.from("quiz_players").select("id,nickname,total").eq("game_id", G.id).then(function (r) {
+      (r.data || []).forEach(function (p) {
+        if (players[p.id]) { players[p.id].nickname = p.nickname; players[p.id].total = p.total; }
+        else players[p.id] = { id: p.id, nickname: p.nickname, total: p.total, lastGain: 0 };
+      });
+      // fjern dem der er slettet i databasen
+      var live = {};
+      (r.data || []).forEach(function (p) { live[p.id] = 1; });
+      Object.keys(players).forEach(function (id) { if (!live[id]) delete players[id]; });
+      drawPlayers();
+      done && done();
+    });
+  }
+
+  // Sikkerhedsnet, hvis en realtidsbesked er gået tabt.
+  setInterval(function () {
+    if (!G || document.hidden) return;
+    if (phase === "lobby" || phase === "board") refreshPlayers();
+  }, 8000);
+
   function openLobby() {
     phase = "lobby";
     cur = null;
@@ -636,6 +718,7 @@
     $("nextBtn").textContent = "Vis stilling";
     $("codeOut").textContent = G.code;
     drawRounds(); drawQR(); drawPlayers();
+    refreshPlayers();
     view("v-lobby", true);
     push({ phase: "lobby" });
   }
@@ -654,11 +737,24 @@
     ROUNDS.forEach(function (r, i) {
       var b = document.createElement("button");
       b.className = "roundbtn" + (doneRounds[i] ? " done" : "");
-      b.textContent = r.title;
+      b.innerHTML = esc(r.title) + '<span class="mins">' + minutes(r) + " min</span>";
       b.onclick = function () { rIdx = i; qIdx = 0; showQuestion(); };
       list.appendChild(b);
     });
+    var tot = ROUNDS.reduce(function (a, r) { return a + rawMin(r); }, 0);
+    var sum = document.createElement("div");
+    sum.className = "roundsum";
+    sum.textContent = ROUNDS.reduce(function (a, r) { return a + r.questions.length; }, 0) +
+      " spørgsmål i alt · cirka " + Math.round(tot) + " minutters ren kørsel" +
+      (PER > 0 ? " · " + PER + " af " + (ALL_ROUNDS[0] ? ALL_ROUNDS[0].questions.length : "?") + " pr. runde" : "");
+    list.appendChild(sum);
   }
+
+  // Facit, søjler og en kort kommentar tager erfaringsmæssigt ca. 14 sekunder.
+  function rawMin(r) {
+    return r.questions.reduce(function (a, q) { return a + (q.seconds || 20) + 14; }, 0) / 60;
+  }
+  function minutes(r) { return Math.max(1, Math.round(rawMin(r))); }
 
   function drawPlayers() {
     var ids = Object.keys(players);
@@ -777,7 +873,8 @@
       nodes[i].querySelector(".fill").style.width = ((counts[i] || 0) / total * 100) + "%";
     }
 
-    push({ phase: "reveal", qkey: cur.qkey, nonce: cur.nonce, correct: cur.correct, counts: counts });
+    push({ phase: "reveal", qkey: cur.qkey, nonce: cur.nonce, correct: cur.correct,
+           correctText: cur.q.a[cur.correct], counts: counts });
 
     if (!OFFLINE && sb) {
       if (playerUpd.length) sb.from("quiz_players").upsert(playerUpd, { onConflict: "id" }).then(function () {});
@@ -829,6 +926,11 @@
     phase = "board";
     clearTick();
     cur = null;
+    refreshPlayers(drawBoard);
+    drawBoard();
+  }
+
+  function drawBoard() {
     $("headTitle").textContent = "Stilling";
     $("nextBtn").textContent = "Videre →";
     $("backBtn").classList.add("hidden");

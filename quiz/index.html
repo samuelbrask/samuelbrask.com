@@ -93,7 +93,7 @@
   .verdict.ok { color: var(--mint); animation: bounce .6s var(--ease); }
   .verdict.no { color: var(--coral); }
   @keyframes bounce { 0% { transform: scale(.7); opacity: 0; } 55% { transform: scale(1.12); } }
-  .gain { font-family: var(--display); font-weight: 700; font-size: 22px; color: var(--cream); min-height: 30px; }
+  .gain { font-family: var(--display); font-weight: 700; font-size: 19px; color: var(--cream); min-height: 30px; max-width: 30ch; line-height: 1.35; }
   .rankline { color: var(--ink-dim); font-size: 14px; }
 
   .foot { text-align: center; color: var(--ink-faint); font-size: 10px; padding-top: 16px; letter-spacing: .12em; text-transform: uppercase; flex: 0 0 auto; }
@@ -296,11 +296,44 @@
   /* ---------- automatisk tilbage ---------- */
   function resume() {
     var raw = localStorage.getItem(LS);
-    if (!raw || !sb) return;
-    var saved;
-    try { saved = JSON.parse(raw); } catch (e) { return; }
-    if (!saved || !saved.playerId) return;
+    if (!sb) return;
+    var saved = null;
+    try { saved = raw ? JSON.parse(raw) : null; } catch (e) { saved = null; }
 
+    var urlCode = (p.get("kode") || "").toUpperCase().slice(0, 4);
+
+    // Står der en kode i adressen, er DEN bestemmende. Ellers ville en
+    // gammel session sende folk ind i går-dagens quiz, når de scanner
+    // en ny QR-kode.
+    if (urlCode) {
+      sb.from("quiz_games").select("id,code,label,state").eq("code", urlCode).maybeSingle()
+        .then(function (r) {
+          if (!r.data) { showLogin(saved); return; }
+          var g = r.data;
+          if (saved && saved.playerId && saved.gameId === g.id) { resumeSaved(saved); return; }
+          // Koden peger på en anden dag end den gemte. Log ind på ny.
+          showLogin(saved, g);
+        })
+        .catch(function () { showLogin(saved); });
+      return;
+    }
+
+    if (saved && saved.playerId) { resumeSaved(saved); return; }
+  }
+
+  function showLogin(saved, g) {
+    if (saved && saved.nickname && !$("nick").value) $("nick").value = saved.nickname;
+    if (g) {
+      $("joinErr").innerHTML =
+        "Du er på vej ind på <b>" + esc(g.label || "en ny dag") + "</b>." +
+        (saved && saved.day && saved.day !== g.label
+          ? '<div style="margin-top:6px;color:var(--ink-faint);font-size:12px">Din plads på ' + esc(saved.day) + " rører vi ikke.</div>"
+          : "");
+    }
+    dot(false, "klar");
+  }
+
+  function resumeSaved(saved) {
     dot(false, "henter din plads");
     sb.from("quiz_players").select("id,total,game_id").eq("id", saved.playerId).maybeSingle()
       .then(function (r) {
@@ -458,14 +491,18 @@
     var mine = answered[s.qkey];
     var ok = mine !== undefined && mine === s.correct;
 
+    // Skriv selve svaret, ikke formens navn. "Det rigtige var romben" siger
+    // ingenting til den, der kigger på sin telefon.
+    var facit = s.correctText ? "Det rigtige var: " + s.correctText : "";
+
     if (mine === undefined) {
       $("verdict").textContent = "Ikke svaret";
       $("verdict").className = "verdict no";
-      $("gain").textContent = "Det rigtige var " + shapeName(s.correct) + ".";
+      $("gain").textContent = facit;
     } else {
       $("verdict").textContent = ok ? "Rigtigt" : "Forkert";
       $("verdict").className = "verdict " + (ok ? "ok" : "no");
-      $("gain").textContent = ok ? "" : "Det rigtige var " + shapeName(s.correct) + ".";
+      $("gain").textContent = ok ? "" : facit;
       buzz(ok ? [18, 60, 18] : 40);
     }
     $("rankline").textContent = "";
@@ -495,7 +532,6 @@
     if (i === 2) return '<svg class="shape" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="#fff"/></svg>';
     return '<svg class="shape" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="#fff"/></svg>';
   }
-  function shapeName(i) { return ["trekanten", "romben", "cirklen", "firkanten"][i] || "?"; }
 
   resume();
 })();
