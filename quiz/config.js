@@ -29,6 +29,7 @@ window.QUIZ_CONFIG = {
     "Lederdag 3. september",
     "Aalborg 7. september",
     "Carlsbergbyen 9. + 11. september",
+    "Carlsbergbyen + online opsamling" 
     "Test"
   ]
 };
