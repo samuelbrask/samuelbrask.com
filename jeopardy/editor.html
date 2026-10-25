@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redigér quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="p-editor">
+  <header class="ed-top">
+    <div class="ed-title">
+      <a href="./" class="back">Alle quizzer</a>
+      <input id="title" class="title-input" aria-label="Quizzens navn">
+      <span id="saveState" class="save-state"></span>
+    </div>
+    <nav class="ed-links">
+      <a id="lnkHost" target="_blank" rel="noopener" class="btn">Åbn værtspanel</a>
+      <a id="lnkBoard" target="_blank" rel="noopener" class="btn">Åbn tavlen</a>
+    </nav>
+  </header>
+
+  <section class="ed-settings panel">
+    <label>Kategorier<select id="catCount"></select></label>
+    <label>Spørgsmål pr. kategori<select id="rowCount"></select></label>
+    <label>Point-trin<input id="step" type="number" min="10" step="10"></label>
+    <button id="applyValues" class="btn" type="button">Sæt alle værdier efter trin</button>
+    <label>Sekunder til at svare<input id="seconds" type="number" min="3" max="60"></label>
+    <label>Musikklip, sekunder<input id="clip" type="number" min="0" max="300" title="0 = spil til værten stopper"></label>
+    <label>Bonusfelter<select id="bonusMode">
+      <option value="dd">Daily Double – holdet satser selv</option>
+      <option value="double">Dobbelt point – alle kan summe</option>
+    </select></label>
+    <label class="check"><input id="minus" type="checkbox"> Forkert svar giver minuspoint</label>
+    <label class="check"><input id="autoTimeout" type="checkbox"> Når tiden er gået, tæller det som forkert</label>
+    <div class="ed-io">
+      <button id="pasteBtn" class="btn" type="button">Indsæt spørgsmål (JSON)</button>
+      <button id="exportBtn" class="btn ghost" type="button">Download som fil</button>
+    </div>
+  </section>
+
+  <section id="grid" class="ed-grid" aria-label="Kategorier og spørgsmål"></section>
+
+  <dialog id="qDialog" class="q-dialog">
+    <form method="dialog" id="qForm">
+      <h2 id="qHead"></h2>
+      <div class="seg" role="radiogroup" aria-label="Type">
+        <label><input type="radio" name="type" value="text"><span>Tekst</span></label>
+        <label><input type="radio" name="type" value="image"><span>Billede</span></label>
+        <label><input type="radio" name="type" value="music"><span>Musik</span></label>
+      </div>
+      <label>Spørgsmål (vises på tv'et)<textarea id="fQ" rows="3"></textarea></label>
+      <label>Svar (kun til dig)<input id="fA"></label>
+      <div class="only-image"><label>Billedlink<input id="fImg" placeholder="https://…"></label></div>
+      <div class="only-music">
+        <label>Spotify-link til nummeret<input id="fSp" placeholder="https://open.spotify.com/track/…"></label>
+        <div class="two">
+          <label>Start ved (m:ss)<input id="fStart" placeholder="0:45"></label>
+          <label>Længde, sekunder<input id="fLen" type="number" min="0" placeholder="standard"></label>
+        </div>
+      </div>
+      <div class="two">
+        <label>Point<input id="fVal" type="number" min="0" step="10"></label>
+        <label class="check"><input id="fBonus" type="checkbox"> Bonusfelt</label>
+      </div>
+      <div class="dlg-btns">
+        <button value="cancel" class="btn ghost" type="submit">Annullér</button>
+        <button id="fSave" value="save" class="btn primary" type="submit">Gem spørgsmål</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="pasteDialog" class="q-dialog">
+    <form method="dialog">
+      <h2>Indsæt spørgsmål</h2>
+      <p class="hint">Indsæt JSON med "categories" – fx det, Claude laver til dig. Det erstatter tavlens kategorier og spørgsmål, men beholder indstillingerne.</p>
+      <textarea id="pasteText" rows="12" spellcheck="false"></textarea>
+      <div class="dlg-btns">
+        <button value="cancel" class="btn ghost" type="submit">Annullér</button>
+        <button value="ok" class="btn primary" type="submit">Erstat spørgsmål</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="shared.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>

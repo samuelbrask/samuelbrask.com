@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#040A2E">
+<title>Summer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="p-phone">
+  <section id="join" class="join" hidden>
+    <h1 id="joinTitle">Meld jeres hold</h1>
+    <form id="joinForm">
+      <label for="teamName">Holdnavn</label>
+      <input id="teamName" maxlength="24" autocomplete="off" required>
+      <fieldset>
+        <legend>Farve</legend>
+        <div id="swatches" class="swatches"></div>
+      </fieldset>
+      <button class="btn primary big" type="submit">Gå med</button>
+    </form>
+  </section>
+
+  <section id="play" class="play" hidden>
+    <header class="ph-top">
+      <span id="phName" class="ph-name"></span>
+      <span id="phScore" class="ph-score"></span>
+    </header>
+    <button id="buzz" class="buzz-btn" type="button">
+      <span id="bzBig" class="bz-big"></span>
+      <span id="bzSmall" class="bz-small"></span>
+    </button>
+    <p id="flash" class="flash" aria-live="assertive"></p>
+    <button id="leave" class="link-btn" type="button">Skift hold</button>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="shared.js"></script>
+  <script src="hold.js"></script>
+</body>
+</html>

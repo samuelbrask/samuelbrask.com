@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Værtspanel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="p-host">
+  <header class="host-top">
+    <div>
+      <h1 id="title">Værtspanel</h1>
+      <p class="host-code">Kode <strong id="code"></strong></p>
+    </div>
+    <nav class="host-links">
+      <a id="lnkBoard" target="_blank" rel="noopener">Åbn tavlen</a>
+      <a id="lnkEdit" target="_blank" rel="noopener">Redigér spørgsmål</a>
+    </nav>
+  </header>
+
+  <main class="host-main">
+    <section id="now" class="panel now"></section>
+    <section class="panel">
+      <h2>Hold</h2>
+      <ul id="teams" class="team-list"></ul>
+      <form id="addTeam" class="add-team">
+        <input id="addName" maxlength="24" placeholder="Tilføj hold uden telefon" aria-label="Holdnavn">
+        <button class="btn" type="submit">Tilføj</button>
+      </form>
+    </section>
+    <section class="panel board-panel">
+      <h2>Tavle</h2>
+      <div id="miniBoard" class="mini-board"></div>
+      <p class="legend">★ bonus &nbsp; ♪ musik &nbsp; ▣ billede</p>
+    </section>
+    <section class="panel tools">
+      <h2>Spillet</h2>
+      <div class="tool-row">
+        <button class="btn" data-act="lobby" type="button">Vis QR-kode på tv'et</button>
+        <button class="btn" data-act="toBoard" type="button">Vis tavlen</button>
+        <button class="btn" data-act="end" type="button">Vis slutstilling</button>
+      </div>
+      <div class="tool-row">
+        <button class="btn ghost" data-act="resetScores" type="button">Nulstil point og tavle</button>
+        <button class="btn ghost danger" data-act="resetAll" type="button">Start forfra uden hold</button>
+      </div>
+      <p class="hint">Hav kun værtspanelet åbent ét sted ad gangen, ellers styrer to vinduer spillet samtidig.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="shared.js"></script>
+  <script src="vaert.js"></script>
+</body>
+</html>
