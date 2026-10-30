@@ -1,56 +1,21 @@
 <!doctype html>
 <html lang="da">
 <head>
+<title>Jeopardy</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeopardy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
-<body class="p-index">
-  <main class="idx">
-    <h1 class="idx-title">Jeopardy</h1>
-    <p class="idx-sub">Lav en tavle, sæt den på tv'et, og lad holdene summe fra telefonen.</p>
-    <button id="newBtn" class="btn primary big" type="button">Lav en ny quiz</button>
-    <ul id="games" class="idx-games"></ul>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
-  <script src="config.js"></script>
-  <script src="shared.js"></script>
-  <script>
-  (async function () {
-    const { sb, esc } = JP;
-    const list = document.getElementById('games');
-
-    async function load() {
-      const { data, error } = await sb.from('jp_games').select('code,title,updated_at').order('updated_at', { ascending: false });
-      if (error) { list.innerHTML = '<li class="hint">Kunne ikke hente quizzer: ' + esc(error.message) + '. Har du kørt setup.sql og udfyldt config.js?</li>'; return; }
-      list.innerHTML = (data || []).map(g =>
-        '<li><div><strong>' + esc(g.title) + '</strong><span>Kode ' + esc(g.code) + '</span></div>' +
-        '<nav><a class="btn" href="editor.html?g=' + g.code + '">Redigér</a>' +
-        '<a class="btn" href="tavle.html?g=' + g.code + '" target="_blank" rel="noopener">Tavle</a>' +
-        '<a class="btn primary" href="vaert.html?g=' + g.code + '" target="_blank" rel="noopener">Værtspanel</a></nav></li>').join('');
-    }
-
-    function newCode() {
-      const L = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-      return Array.from({ length: 4 }, () => L[Math.floor(Math.random() * L.length)]).join('');
-    }
-
-    document.getElementById('newBtn').addEventListener('click', async () => {
-      for (let i = 0; i < 5; i++) {
-        const code = newCode();
-        const { error } = await sb.from('jp_games').insert({ code, title: 'Sommerhus-Jeopardy', config: JP.defaultConfig(), state: JP.defaultState() });
-        if (!error) { location.href = 'editor.html?g=' + code; return; }
-        if (error.code !== '23505') { JP.toast('Quizzen blev ikke oprettet: ' + error.message, 6000); return; }
-      }
-    });
-
-    load();
-  })();
-  </script>
+<body>
+<main class="home">
+  <h1>Sommerhus-<br>Jeopardy</h1>
+  <div class="row">
+    <a class="btn primary big" href="tavle.html">Spil</a>
+    <a class="btn ghost big" href="rediger.html">Redigér quiz</a>
+  </div>
+</main>
 </body>
 </html>

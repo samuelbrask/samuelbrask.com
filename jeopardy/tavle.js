@@ -1,263 +1,160 @@
 (async function () {
   const $ = s => document.querySelector(s);
-  const { sb, code, esc } = JP;
 
   // Tilbage fra Spotify-login?
-  if (new URLSearchParams(location.search).has('state')) {
-    if (await JPSpotify.handleRedirect()) return;
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('code') || qs.has('error')) { if (await JPSpotify.handleRedirect()) return; }
+
+  const quiz = await Q.loadQuiz();
+  let game = Q.loadGame();
+  let cur = null;          // { c, r } for det åbne felt
+  let paused = false;
+
+  const key = (c, r) => c + '-' + r;
+  const value = () => (cur ? quiz.values[cur.r] : game.last) || 0;
+  const save = () => Q.saveGame(game);
+
+  /* ---------- Tavlen ---------- */
+  function renderBoard() {
+    $('#title').textContent = quiz.title;
+    document.title = quiz.title;
+    const b = $('#board');
+    const nc = quiz.categories.length, nr = quiz.values.length;
+    b.style.gridTemplateColumns = `repeat(${nc}, minmax(0, 1fr))`;
+    b.style.gridTemplateRows = `minmax(0, .8fr) repeat(${nr}, minmax(0, 1fr))`;
+    let h = quiz.categories.map(k => `<div class="cat">${Q.esc(k.name)}</div>`).join('');
+    quiz.values.forEach((v, r) => quiz.categories.forEach((k, c) => {
+      const used = game.used[key(c, r)];
+      h += `<button class="tile${used ? ' used' : ''}" data-c="${c}" data-r="${r}" type="button">${v}</button>`;
+    }));
+    b.innerHTML = h;
   }
 
-  let C, S, teams = [];
-  let lastSig = '', lastMusicN = null, lastBuzzKey = '', lastOpen = false;
-  let cdEnd = 0, cdTotal = 10000, cdWarned = false;
-  const played = new Set();
-  function once(key, fn) { if (!played.has(key)) { played.add(key); fn(); } }
-
-  if (!code) {
-    $('#stage').innerHTML = '<section class="msg"><h1>Mangler spilkode</h1><p>Åbn tavlen fra forsiden, så kommer koden med i adressen.</p></section>';
-    $('#startOverlay').hidden = true;
-    return;
-  }
-
-  try {
-    const g = await JP.loadGame();
-    if (!g) throw new Error('Der findes ikke et spil med koden ' + code + '.');
-    C = g.config; S = g.state; lastMusicN = S.music.n;
-    teams = await JP.loadTeams();
-  } catch (e) {
-    $('#stage').innerHTML = '<section class="msg"><h1>Tavlen kunne ikke åbne</h1><p>' + esc(e.message) + '</p></section>';
-    $('#startOverlay').hidden = true;
-    return;
-  }
-
-  JP.subscribe({
-    onGame: r => { C = r.config; S = r.state; update(); },
-    onTeams: async () => { teams = await JP.loadTeams(); update(); }
-  });
-  // Sikkerhedsnet hvis live-forbindelsen hikker
-  setInterval(async () => {
-    const { data } = await sb.from('jp_games').select('state,config').eq('code', code).maybeSingle();
-    if (!data) return;
-    const ns = JP.normState(data.state);
-    if (JSON.stringify(ns) !== JSON.stringify(S)) { S = ns; C = JP.normConfig(data.config); update(); }
-  }, 4000);
-  setInterval(async () => { teams = await JP.loadTeams(); renderScores(); }, 8000);
-
-  JPSpotify.init(renderSpotify);
-
-  $('#startBtn').addEventListener('click', () => {
-    JP.unlockAudio();
-    JPSpotify.activate();
-    $('#startOverlay').hidden = true;
-    goFullscreen();
-  });
-  document.addEventListener('keydown', e => {
-    if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : goFullscreen(); }
-  });
-  document.addEventListener('click', () => { JP.unlockAudio(); JPSpotify.activate(); });
-  function goFullscreen() { try { document.documentElement.requestFullscreen(); } catch (e) { /* ok */ } }
-
-  update();
-  setInterval(tickCountdown, 100);
-
-  // ---------- rendering ----------
-
-  function update() {
-    document.title = C.title + ' – tavle';
-    renderScores();
-    const showTeams = ['lobby', 'end', 'question'].includes(S.phase);
-    const sig = JSON.stringify([S.phase, S.cur, S.splash, S.dd, S.open, S.buzz, S.locked, S.used, S.winner, C,
-      showTeams ? teams.map(t => [t.id, t.name, t.color, S.phase === 'end' ? t.score : 0]) : 0]);
-    if (sig !== lastSig) { lastSig = sig; renderStage(); }
-    handleBuzzFx();
-    handleMusic();
-  }
-
-  function teamStyle(t) {
-    return t ? '--team:' + t.color + ';--team-ink:' + JP.inkFor(t.color) : '';
-  }
-
+  /* ---------- Hold og point ---------- */
   function renderScores() {
-    const el = $('#scores');
-    el.hidden = S.phase === 'lobby' || S.phase === 'end' || !teams.length;
-    el.innerHTML = teams.map(t => {
-      const cls = ['score'];
-      if (S.control === t.id) cls.push('in-control');
-      if (S.phase === 'question' && S.locked.includes(t.id)) cls.push('out');
-      return '<div class="' + cls.join(' ') + '" style="' + teamStyle(t) + '">' +
-        '<span class="s-name">' + esc(t.name) + '</span>' +
-        '<span class="s-pts' + (t.score < 0 ? ' neg' : '') + '">' + t.score + '</span></div>';
-    }).join('');
+    const v = value();
+    $('#scores').innerHTML = game.teams.map((t, i) => `
+      <div class="team">
+        <span class="chip" style="background:${t.color}"></span>
+        <button class="name" data-rename="${i}" type="button" title="Klik for at omdøbe">${Q.esc(t.name)}</button>
+        <span class="pts">${t.score}</span>
+        <div class="btns">
+          <button class="minus" data-minus="${i}" type="button" ${v ? '' : 'disabled'}>−${v}</button>
+          <button class="plus" data-plus="${i}" type="button" ${v ? '' : 'disabled'}>+${v}</button>
+          <button class="del" data-del="${i}" type="button" aria-label="Fjern ${Q.esc(t.name)}">×</button>
+        </div>
+      </div>`).join('') +
+      (game.teams.length < 6 ? '<button class="btn ghost add-team" id="btnAdd" type="button">+ Hold</button>' : '');
   }
 
-  function renderStage() {
-    const st = $('#stage');
-    if (S.phase === 'lobby') return renderLobby(st);
-    if (S.phase === 'end') return renderEnd(st);
-    if ((S.phase === 'question' || S.phase === 'reveal') && JP.qAt(C, S.cur)) return renderQuestion(st);
-    return renderBoard(st);
+  $('#scores').addEventListener('click', e => {
+    const t = e.target.closest('button'); if (!t) return;
+    const d = t.dataset;
+    if (d.plus != null) { game.teams[+d.plus].score += value(); }
+    else if (d.minus != null) { game.teams[+d.minus].score -= value(); }
+    else if (d.rename != null) {
+      const n = prompt('Holdets navn', game.teams[+d.rename].name);
+      if (n && n.trim()) game.teams[+d.rename].name = n.trim();
+    } else if (d.del != null) {
+      if (!confirm('Fjern ' + game.teams[+d.del].name + '?')) return;
+      game.teams.splice(+d.del, 1);
+    } else if (t.id === 'btnAdd') {
+      const i = game.teams.length;
+      game.teams.push({ name: Q.NAMES[i] || 'Hold ' + (i + 1), color: Q.COLORS[i % Q.COLORS.length], score: 0 });
+    } else return;
+    save(); renderScores();
+  });
+
+  /* ---------- Åbn et felt ---------- */
+  $('#board').addEventListener('click', e => {
+    const t = e.target.closest('.tile'); if (!t) return;
+    openTile(+t.dataset.c, +t.dataset.r);
+  });
+
+  function openTile(c, r) {
+    cur = { c, r };
+    game.used[key(c, r)] = true;
+    game.last = quiz.values[r];
+    save();
+    const k = quiz.categories[c], q = k.questions[r];
+    $('#oCat').textContent = k.name;
+    $('#oVal').textContent = quiz.values[r];
+    $('#oQ').textContent = q.q;
+    $('#oQ').hidden = !q.q.trim();
+    $('#oErr').hidden = true;
+    $('#overlay').hidden = false;
+    renderBoard(); renderScores();
+    play();
   }
 
-  function renderLobby(st) {
-    const joinUrl = JP.pageUrl('hold.html');
-    st.innerHTML =
-      '<section class="lobby">' +
-        '<div class="lobby-left">' +
-          '<h1 class="lobby-title">' + esc(C.title) + '</h1>' +
-          '<p class="lobby-sub">Scan koden med telefonen, giv holdet et navn og vælg en farve.</p>' +
-          (teams.length
-            ? '<ul class="lobby-teams">' + teams.map(t => '<li style="' + teamStyle(t) + '">' + esc(t.name) + '</li>').join('') + '</ul>'
-            : '<p class="lobby-empty">Ingen hold endnu.</p>') +
-        '</div>' +
-        '<div class="qr-wrap"><div id="qr"></div><div class="qr-url">' + esc(joinUrl.replace(/^https?:\/\//, '')) + '</div></div>' +
-      '</section>';
+  async function play() {
+    const q = quiz.categories[cur.c].questions[cur.r];
+    const id = Q.spotifyId(q.url);
+    setPaused(false);
+    if (!id) { showErr(q.url.trim() ? 'Linket er ikke et link til en sang.' : 'Der er ikke sat musik på dette felt.'); setPaused(true); return; }
+    if (!JPSpotify.loggedIn) { showErr('Spotify er ikke forbundet. Klik ♪ øverst til højre og log ind.'); setPaused(true); return; }
+    try { await JPSpotify.play(id, 0, 0); $('#oErr').hidden = true; }
+    catch (e) { showErr(e.message); setPaused(true); }
+  }
+
+  function showErr(msg) { $('#oErr').textContent = msg; $('#oErr').hidden = false; }
+  function setPaused(p) {
+    paused = p;
+    $('#eq').classList.toggle('paused', p);
+    $('#btnPause').textContent = p ? 'Afspil' : 'Pause';
+  }
+
+  async function togglePause() {
+    if (!cur) return;
     try {
-      new QRCode(document.getElementById('qr'), {
-        text: joinUrl, width: 512, height: 512, colorDark: '#040A2E', colorLight: '#FFFFFF',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    } catch (e) { $('#qr').textContent = joinUrl; }
+      if (paused) { await JPSpotify.resume(); setPaused(false); }
+      else { await JPSpotify.pause(); setPaused(true); }
+    } catch (e) { showErr(e.message); }
   }
 
-  function renderBoard(st) {
-    const cats = C.categories, rows = cats[0].questions.length;
-    let html = '<section class="board" style="--cols:' + cats.length + ';--rows:' + rows + '">';
-    cats.forEach(c => { html += '<div class="cat"><span>' + esc(c.name) + '</span></div>'; });
-    for (let r = 0; r < rows; r++) {
-      cats.forEach((c, ci) => {
-        const used = S.used.includes(ci + '-' + r);
-        html += '<div class="cell' + (used ? ' used' : '') + '">' + (used ? '' : esc(c.questions[r].value)) + '</div>';
-      });
-    }
-    st.innerHTML = html + '</section>';
+  function back() {
+    if (!cur) return;
+    JPSpotify.stop().catch(() => {});
+    cur = null;
+    $('#overlay').hidden = true;
+    renderScores();
   }
 
-  function renderQuestion(st) {
-    const q = JP.qAt(C, S.cur), cat = C.categories[S.cur.c];
-    const dd = C.settings.bonusMode === 'dd';
+  $('#btnPause').addEventListener('click', togglePause);
+  $('#btnRestart').addEventListener('click', play);
+  $('#btnBack').addEventListener('click', back);
 
-    if (S.phase === 'question' && S.splash) {
-      st.innerHTML =
-        '<section class="q-view splash">' +
-          '<div class="splash-word">' + (dd ? 'Daily<br>Double' : 'Dobbelt<br>point') + '</div>' +
-          '<div class="splash-cat">' + esc(cat.name) + '</div>' +
-        '</section>';
-      once('splash' + JP.keyOf(S.cur) + ':' + S.round, () => {
-        JP.tone(523, 0.12, 'triangle', 0.15); JP.tone(784, 0.12, 'triangle', 0.15, 0.12); JP.tone(1047, 0.3, 'triangle', 0.15, 0.24);
-      });
-      return;
-    }
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
+    else if (e.key === 'Escape' && cur) back();
+    else if (e.key === ' ' && cur) { e.preventDefault(); togglePause(); }
+  });
 
-    const val = S.dd ? S.dd.wager : JP.valueAt(C, S.cur);
-    const len = (q.q || '').length;
-    const sizeCls = len > 150 ? ' long' : len > 75 ? ' mid' : '';
-    const media =
-      (q.type === 'image' && q.img ? '<img class="q-img" src="' + esc(q.img) + '" alt="">' : '') +
-      (q.type === 'music' ? '<div class="eq' + (S.buzz || S.phase === 'reveal' ? ' still' : '') + '" aria-hidden="true">' + '<i></i>'.repeat(7) + '</div>' : '');
+  $('#btnReset').addEventListener('click', () => {
+    if (!confirm('Starte et nyt spil? Alle point nulstilles, og alle felter bliver åbne igen.')) return;
+    game = Q.newGame(game); save(); renderBoard(); renderScores();
+  });
 
-    if (S.phase === 'reveal') {
-      const w = JP.teamById(teams, S.winner);
-      st.innerHTML =
-        '<section class="q-view reveal">' +
-          '<header class="q-head"><span>' + esc(cat.name) + '</span><span class="q-val">' + val + '</span></header>' +
-          '<div class="q-body">' +
-            '<p class="q-text small">' + esc(q.q) + '</p>' +
-            '<p class="a-text">' + esc(q.a || '—') + '</p>' +
-            (w ? '<p class="winner-line" style="' + teamStyle(w) + '">+' + val + ' til ' + esc(w.name) + '</p>' : '') +
-          '</div>' +
-        '</section>';
-      return;
-    }
-
-    const bt = S.buzz ? JP.teamById(teams, S.buzz.team) : null;
-    const ddt = S.dd ? JP.teamById(teams, S.dd.team) : null;
-    const chips = S.dd ? '' : teams.map(t =>
-      '<span class="chip' + (S.locked.includes(t.id) ? ' out' : '') + '" style="' + teamStyle(t) + '">' + esc(t.name) + '</span>').join('');
-
-    st.innerHTML =
-      '<section class="q-view' + (S.open ? ' armed' : '') + '">' +
-        '<header class="q-head"><span>' + esc(cat.name) + '</span><span class="q-val">' + val + '</span></header>' +
-        '<div class="q-body">' + media + '<p class="q-text' + sizeCls + '">' + esc(q.q) + '</p></div>' +
-        '<footer class="q-foot">' + (S.open ? '<span class="armed-label">Summerne er åbne</span>' : '') + chips + '</footer>' +
-        (ddt ? '<div class="dd-banner" style="' + teamStyle(ddt) + '">' + esc(ddt.name) + ' satser ' + S.dd.wager + '</div>' : '') +
-        (bt ? '<div class="buzz" style="' + teamStyle(bt) + '">' +
-                '<div class="buzz-name">' + esc(bt.name) + '</div>' +
-                '<div class="buzz-count" id="cdNum"></div>' +
-                '<div class="buzz-bar"><i id="cdBar"></i></div>' +
-              '</div>' : '') +
-      '</section>';
-  }
-
-  function renderEnd(st) {
-    const sorted = teams.slice().sort((a, b) => b.score - a.score);
-    st.innerHTML =
-      '<section class="end">' +
-        '<h1>Slutstilling</h1>' +
-        '<ol class="podium">' + sorted.map((t, i) =>
-          '<li style="' + teamStyle(t) + '"><span class="p-rank">' + (i + 1) + '</span><span class="p-name">' + esc(t.name) +
-          '</span><span class="p-pts">' + t.score + '</span></li>').join('') + '</ol>' +
-      '</section>';
-    if (sorted.length) once('end' + S.round, () => { [523, 659, 784, 1047].forEach((f, i) => JP.tone(f, 0.25, 'triangle', 0.14, i * 0.14)); });
-  }
-
-  // ---------- summer-effekter og nedtælling ----------
-
-  function handleBuzzFx() {
-    const key = S.phase === 'question' && S.buzz ? S.buzz.team + ':' + S.buzz.round : '';
-    if (key && key !== lastBuzzKey) {
-      cdTotal = (Number(C.settings.seconds) || 10) * 1000;
-      cdEnd = Date.now() + cdTotal;
-      cdWarned = false;
-      JP.tone(880, 0.09, 'square', 0.16); JP.tone(1175, 0.22, 'square', 0.16, 0.09);
-    }
-    if (!key) cdEnd = 0;
-    lastBuzzKey = key;
-    if (S.open && !lastOpen && S.phase === 'question') JP.tone(660, 0.08, 'sine', 0.1);
-    lastOpen = S.open;
-    tickCountdown();
-  }
-
-  function tickCountdown() {
-    const num = document.getElementById('cdNum'), bar = document.getElementById('cdBar');
-    if (!cdEnd || !num || !bar) return;
-    const left = Math.max(0, cdEnd - Date.now());
-    num.textContent = Math.ceil(left / 1000);
-    bar.style.transform = 'scaleX(' + (left / cdTotal) + ')';
-    if (left === 0 && !cdWarned) { cdWarned = true; JP.tone(196, 0.6, 'sawtooth', 0.14); }
-  }
-
-  // ---------- musik ----------
-
-  function handleMusic() {
-    const m = S.music || {};
-    if (m.n === lastMusicN) return;
-    lastMusicN = m.n;
-    const q = JP.qAt(C, S.cur);
-    const run = p => p.catch(e => { JPSpotify.reportError(e.message); JP.toast(e.message, 15000); });
-    if (m.cmd === 'play') {
-      if (!q || q.type !== 'music') return;
-      const id = JP.spotifyId(q.spotify);
-      if (!id) { JP.toast('Spørgsmålet har ikke et gyldigt Spotify-link'); return; }
-      if (!JPSpotify.loggedIn) { JPSpotify.reportError('Spotify er ikke forbundet. Klik ♪ og log ind.'); JP.toast('Spotify er ikke forbundet på tavlen – klik ♪ øverst til højre', 15000); return; }
-      const len = q.len == null || q.len === '' ? C.settings.clip : q.len;
-      run(JPSpotify.play(id, q.start || 0, len));
-    } else if (m.cmd === 'pause') run(JPSpotify.pause());
-    else if (m.cmd === 'resume') run(JPSpotify.resume());
-    else if (m.cmd === 'stop') run(JPSpotify.stop());
-  }
-
-  // ---------- Spotify-panel ----------
+  /* ---------- Spotify ---------- */
+  $('#btnStart').addEventListener('click', () => {
+    JPSpotify.activate();
+    $('#start').hidden = true;
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  });
+  document.addEventListener('click', () => JPSpotify.activate());
 
   $('#spBtn').addEventListener('click', e => {
     e.stopPropagation();
-    const p = $('#spPanel');
-    p.hidden = !p.hidden;
-    if (!p.hidden) renderSpotify(JPSpotify.status);
+    $('#spPanel').hidden = !$('#spPanel').hidden;
+    renderSpotify(JPSpotify.status);
+  });
+  document.addEventListener('click', e => {
+    if (!$('#spPanel').hidden && !$('#spPanel').contains(e.target) && e.target !== $('#spBtn')) $('#spPanel').hidden = true;
   });
 
-  async function renderSpotify(status, msg) {
+  function renderSpotify(status, msg) {
     $('#spBtn').dataset.status = status;
-    const sEl = $('#spStatus'), body = $('#spBody');
     const labels = {
       off: 'Spotify er ikke forbundet.',
       nocfg: msg,
@@ -265,45 +162,31 @@
       ready: 'Spotify er klar. Musikken spiller skjult.',
       error: msg
     };
-    sEl.textContent = labels[status] || '';
+    $('#spStatus').textContent = labels[status] || '';
     if ($('#spPanel').hidden) return;
+    const body = $('#spBody');
     if (status === 'off') {
       body.innerHTML = '<button class="btn primary" id="spLogin" type="button">Log ind med Spotify</button>';
-      $('#spLogin').onclick = () => JPSpotify.login(code);
+      $('#spLogin').onclick = () => JPSpotify.login('');
       return;
     }
     if (status === 'nocfg') { body.innerHTML = ''; return; }
-    let opts = '<option value="">Denne browser (tavlen)</option>';
-    try {
-      const devs = await JPSpotify.devices();
-      const cur = localStorage.getItem('jp-sp-device') || '';
-      devs.filter(d => d.id !== JPSpotify.browserDevice).forEach(d => {
-        opts += '<option value="' + esc(d.id) + '"' + (d.id === cur ? ' selected' : '') + '>' + esc(d.name) + ' (' + esc(d.type) + ')</option>';
-      });
-    } catch (e) { /* vis bare browseren */ }
     body.innerHTML =
-      '<label class="sp-label">Afspil på<select id="spDev">' + opts + '</select></label>' +
-      '<p class="sp-hint">Telefonen dukker op her, når Spotify-appen er åben på den.</p>' +
-      '<div class="sp-row"><button class="btn primary" id="spTest" type="button">Test lyd (10 sek)</button></div>' +
-      '<p class="sp-hint" id="spTestMsg"></p>' +
-      '<div class="sp-row"><button class="btn" id="spRefresh" type="button">Opdater enheder</button>' +
-      '<button class="btn ghost" id="spOut" type="button">Log ud</button></div>';
-    $('#spDev').onchange = e => { JPSpotify.setTarget(e.target.value); JP.toast('Afspilningsenhed gemt'); };
-    $('#spRefresh').onclick = () => renderSpotify(JPSpotify.status);
-    $('#spTest').onclick = async () => {
-      JP.unlockAudio(); JPSpotify.activate();
-      const tm = $('#spTestMsg');
-      let id = null;
-      (C.categories || []).forEach(k => (k.questions || []).forEach(q => { if (!id && q.type === 'music') id = JP.spotifyId(q.spotify); }));
-      id = id || '4uLU6hMCjMI75M1A2tKUQC';
-      tm.textContent = 'Starter afspilning…';
-      try { await JPSpotify.play(id, 0, 10); tm.textContent = 'Spotify har accepteret afspilningen. Hører du ingenting, så tjek computerens lydstyrke.'; }
-      catch (e) { JPSpotify.reportError(e.message); tm.textContent = e.message; }
-    };
+      '<div class="sp-row"><button class="btn primary" id="spTest" type="button">Test lyd (10 sek)</button>' +
+      '<button class="btn ghost" id="spOut" type="button">Log ud</button></div><p class="sp-hint" id="spMsg"></p>';
     $('#spOut').onclick = () => { JPSpotify.logout(); renderSpotify('off'); };
+    $('#spTest').onclick = async () => {
+      JPSpotify.activate();
+      let id = null;
+      quiz.categories.forEach(k => k.questions.forEach(q => { if (!id) id = Q.spotifyId(q.url); }));
+      id = id || '4uLU6hMCjMI75M1A2tKUQC';
+      $('#spMsg').textContent = 'Starter…';
+      try { await JPSpotify.play(id, 0, 10); $('#spMsg').textContent = 'Spiller i 10 sekunder.'; }
+      catch (e) { $('#spMsg').textContent = e.message; }
+    };
   }
-  document.addEventListener('click', e => {
-    const p = $('#spPanel');
-    if (!p.hidden && !p.contains(e.target) && e.target !== $('#spBtn')) p.hidden = true;
-  });
+  JPSpotify.init(renderSpotify);
+
+  renderBoard();
+  renderScores();
 })();

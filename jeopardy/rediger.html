@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="da">
+<head>
+<title>Redigér quiz – Jeopardy</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+<header class="ed-top">
+  <h1>Redigér quiz</h1>
+  <label>Titel <input type="text" id="title" style="width:220px"></label>
+  <label>Kolonner <select id="cols"></select></label>
+  <label>Rækker <select id="rows"></select></label>
+  <span class="saved" id="saved"></span>
+  <div class="actions">
+    <button class="btn ghost" id="btnImport" type="button">Indsæt quiz</button>
+    <button class="btn ghost" id="btnExport" type="button">Hent quiz.json</button>
+    <a class="btn primary" href="tavle.html">Til tavlen</a>
+  </div>
+</header>
+<div class="ed-wrap"><div class="ed-grid" id="grid"></div></div>
+<p class="ed-help">Alt gemmes automatisk i denne browser. Point skrives i venstre kolonne. Spotify-link: højreklik på sangen i Spotify → Del → Kopiér link til sang. Spørgsmålet er valgfrit – står feltet tomt, vises kun musikken.</p>
+<script src="quiz.js?v=2"></script>
+<script src="rediger.js?v=2"></script>
+</body>
+</html>

@@ -1,34 +1,54 @@
 <!doctype html>
 <html lang="da">
 <head>
+<title>Tavle – Jeopardy</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tavle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body class="p-board">
-  <main id="stage" aria-live="polite"></main>
-  <footer id="scores" class="scores"></footer>
-
-  <button id="spBtn" class="sp-btn" type="button" aria-label="Musikindstillinger" title="Musik"><span class="sp-dot"></span>♪</button>
-  <div id="spPanel" class="sp-panel" hidden>
-    <p id="spStatus" class="sp-status"></p>
-    <div id="spBody"></div>
+<div class="stage">
+  <div class="topbar">
+    <h1 id="title"></h1>
+    <a class="btn ghost" href="rediger.html">Redigér</a>
+    <button class="btn ghost" id="btnReset" type="button">Nyt spil</button>
+    <button class="sp-btn" id="spBtn" type="button" aria-label="Spotify"><span class="sp-dot"></span>♪</button>
   </div>
+  <div class="board" id="board"></div>
+  <div class="scores" id="scores"></div>
+</div>
 
-  <div id="startOverlay" class="start-overlay">
-    <button id="startBtn" class="btn primary big" type="button">Start tavlen</button>
-    <p>Ét klik, så browseren må spille lyd og musik. Tryk F for fuld skærm.</p>
+<div class="sp-panel" id="spPanel" hidden>
+  <p class="sp-status" id="spStatus"></p>
+  <div id="spBody"></div>
+</div>
+
+<section class="overlay" id="overlay" hidden aria-live="polite">
+  <div class="o-meta"><span id="oCat"></span><span class="v" id="oVal"></span></div>
+  <div class="o-body">
+    <div class="eq" id="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <p class="o-q" id="oQ"></p>
+    <p class="o-err" id="oErr" hidden></p>
   </div>
+  <div class="o-ctrl">
+    <button class="btn" id="btnPause" type="button">Pause</button>
+    <button class="btn" id="btnRestart" type="button">Fra start</button>
+    <button class="btn primary" id="btnBack" type="button">Tilbage til tavlen</button>
+  </div>
+</section>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="config.js"></script>
-  <script src="shared.js"></script>
-  <script src="spotify.js"></script>
-  <script src="tavle.js"></script>
+<div class="start" id="start">
+  <h1>Klar?</h1>
+  <p>Klik for at starte. Så må browseren spille musik. Tryk F for fuld skærm.</p>
+  <button class="btn primary big" id="btnStart" type="button">Start tavlen</button>
+</div>
+
+<script src="config.js?v=2"></script>
+<script src="quiz.js?v=2"></script>
+<script src="spotify.js?v=2"></script>
+<script src="tavle.js?v=2"></script>
 </body>
 </html>
