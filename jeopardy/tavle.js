@@ -82,18 +82,22 @@
     $('#oQ').textContent = q.q;
     $('#oQ').hidden = !q.q.trim();
     $('#oErr').hidden = true;
+    $('#oAns').textContent = q.a;
+    $('#oAns').hidden = true;
+    $('#btnAns').hidden = !q.a.trim();
+    $('#btnAns').textContent = 'Vis svar';
     $('#overlay').hidden = false;
     renderBoard(); renderScores();
     play();
   }
 
   async function play() {
-    const q = quiz.categories[cur.c].questions[cur.r];
+    const k = quiz.categories[cur.c], q = k.questions[cur.r];
     const id = Q.spotifyId(q.url);
     setPaused(false);
     if (!id) { showErr(q.url.trim() ? 'Linket er ikke et link til en sang.' : 'Der er ikke sat musik på dette felt.'); setPaused(true); return; }
     if (!JPSpotify.loggedIn) { showErr('Spotify er ikke forbundet. Klik ♪ øverst til højre og log ind.'); setPaused(true); return; }
-    try { await JPSpotify.play(id, 0, 0); $('#oErr').hidden = true; }
+    try { await JPSpotify.play(id, k.clip ? q.start : 0, k.clip ? q.stop : 0); $('#oErr').hidden = true; }
     catch (e) { showErr(e.message); setPaused(true); }
   }
 
@@ -107,7 +111,7 @@
   async function togglePause() {
     if (!cur) return;
     try {
-      if (paused) { await JPSpotify.resume(); setPaused(false); }
+      if (paused) { if (await JPSpotify.resume()) setPaused(false); else play(); }
       else { await JPSpotify.pause(); setPaused(true); }
     } catch (e) { showErr(e.message); }
   }
@@ -122,6 +126,14 @@
 
   $('#btnPause').addEventListener('click', togglePause);
   $('#btnRestart').addEventListener('click', play);
+  function toggleAns() {
+    if (!cur || $('#btnAns').hidden) return;
+    const show = $('#oAns').hidden;
+    $('#oAns').hidden = !show;
+    $('#btnAns').textContent = show ? 'Skjul svar' : 'Vis svar';
+  }
+  $('#btnAns').addEventListener('click', toggleAns);
+  JPSpotify.onClipEnd(() => { if (cur) setPaused(true); });
   $('#btnBack').addEventListener('click', back);
 
   document.addEventListener('keydown', e => {
@@ -129,6 +141,7 @@
     if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); }
     else if (e.key === 'Escape' && cur) back();
     else if (e.key === ' ' && cur) { e.preventDefault(); togglePause(); }
+    else if ((e.key === 's' || e.key === 'S') && cur) toggleAns();
   });
 
   $('#btnReset').addEventListener('click', () => {

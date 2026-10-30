@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body class="p-board">
 <div class="stage">
@@ -31,10 +31,12 @@
   <div class="o-body">
     <div class="eq" id="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <p class="o-q" id="oQ"></p>
+    <p class="o-ans" id="oAns" hidden></p>
     <p class="o-err" id="oErr" hidden></p>
   </div>
   <div class="o-ctrl">
     <button class="btn" id="btnPause" type="button">Pause</button>
+    <button class="btn" id="btnAns" type="button">Vis svar</button>
     <button class="btn" id="btnRestart" type="button">Fra start</button>
     <button class="btn primary" id="btnBack" type="button">Tilbage til tavlen</button>
   </div>
@@ -46,9 +48,9 @@
   <button class="btn primary big" id="btnStart" type="button">Start tavlen</button>
 </div>
 
-<script src="config.js?v=2"></script>
-<script src="quiz.js?v=2"></script>
-<script src="spotify.js?v=2"></script>
-<script src="tavle.js?v=2"></script>
+<script src="config.js?v=3"></script>
+<script src="quiz.js?v=3"></script>
+<script src="spotify.js?v=3"></script>
+<script src="tavle.js?v=3"></script>
 </body>
 </html>

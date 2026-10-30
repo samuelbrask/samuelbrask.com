@@ -7,7 +7,7 @@ window.JPSpotify = (function () {
   const TOK = 'jp-sp-token', VER = 'jp-sp-verifier', DEV = 'jp-sp-device';
 
   let player = null, browserDevice = null, status = 'off', statusMsg = '', onStatus = () => {};
-  let clipTimer = null, clipLimited = false, clipRemaining = 0, clipStartedAt = 0, playing = false;
+  let playing = false;
 
   function setStatus(s, msg) { status = s; statusMsg = msg || ''; onStatus(status, statusMsg); }
 
@@ -154,24 +154,43 @@ window.JPSpotify = (function () {
     return (j && j.devices) || [];
   }
 
-  function armClip() {
-    clearTimeout(clipTimer);
-    clipStartedAt = Date.now();
-    if (clipLimited) clipTimer = setTimeout(() => { pause(); clipRemaining = 0; }, clipRemaining);
-  }
-
   const wait = ms => new Promise(r => setTimeout(r, ms));
   async function wakeDevice(id) {
     await api('PUT', '/me/player', { device_ids: [id], play: false });
     await wait(900);
   }
 
-  async function play(trackId, startSec, lenSec) {
-    clearTimeout(clipTimer);
-    const body = {
-      uris: ['spotify:track:' + trackId],
-      position_ms: Math.max(0, Math.round((Number(startSec) || 0) * 1000))
-    };
+  // ---- Klip: spil fra startSec og stop automatisk ved stopSec (sekunder i nummeret) ----
+  let stopAtMs = 0, anchorPos = 0, anchorAt = 0, watchTimer = null, clipEndCb = () => {}, ended = false;
+  const onBrowser = () => !!player && !!browserDevice && targetDevice() === browserDevice;
+
+  // Nuværende position i nummeret (ms)
+  function currentPos() { return playing ? anchorPos + (Date.now() - anchorAt) : anchorPos; }
+
+  function listenState() {
+    if (!player || player._jpListen) return;
+    player._jpListen = true;
+    player.addListener('player_state_changed', st => {
+      if (!st) return;
+      // Spotify fortæller præcis, hvor i nummeret vi er – brug det som ankerpunkt
+      anchorPos = st.position; anchorAt = Date.now();
+    });
+  }
+
+  function watch() {
+    clearInterval(watchTimer);
+    if (!stopAtMs) return;
+    watchTimer = setInterval(() => {
+      if (!playing) return;
+      if (currentPos() >= stopAtMs) {
+        clearInterval(watchTimer);
+        ended = true;
+        pause().then(() => clipEndCb());
+      }
+    }, 40);
+  }
+
+  async function sendPlay(body) {
     try {
       await api('PUT', '/me/player/play' + devQ(), body);
     } catch (e) {
@@ -180,42 +199,58 @@ window.JPSpotify = (function () {
       if (localStorage.getItem(DEV) && browserDevice) localStorage.removeItem(DEV);
       const id = targetDevice();
       if (!id) throw e;
-      // Spotify kender ikke tavlen endnu: væk den og prøv igen
+      // Spotify kender ikke afspilleren endnu: væk den og prøv igen
       try { await wakeDevice(id); } catch (e2) { /* prøv alligevel */ }
       try {
         await api('PUT', '/me/player/play?device_id=' + encodeURIComponent(id), body);
       } catch (e3) {
         if (e3.status !== 404 || !player) throw e3;
-        // Sidste forsøg: genstart den skjulte afspiller
         player.disconnect(); await wait(500); await player.connect(); await wait(2500);
         if (browserDevice) await wakeDevice(browserDevice);
         await api('PUT', '/me/player/play?device_id=' + encodeURIComponent(targetDevice()), body);
       }
     }
+  }
+
+  async function play(trackId, startSec, stopSec) {
+    clearInterval(watchTimer);
+    listenState();
+    const startMs = Math.max(0, Math.round((Number(startSec) || 0) * 1000));
+    const stopMs = Math.round((Number(stopSec) || 0) * 1000);
+    stopAtMs = stopMs > startMs ? stopMs : 0;
+    ended = false;
+    await sendPlay({ uris: ['spotify:track:' + trackId], position_ms: startMs });
+    anchorPos = startMs; anchorAt = Date.now();
     playing = true;
     if (status === 'error') setStatus(player && browserDevice ? 'ready' : status);
-    clipLimited = Number(lenSec) > 0;
-    clipRemaining = clipLimited ? Number(lenSec) * 1000 : 0;
-    armClip();
+    watch();
   }
   async function pause() {
-    if (playing && clipLimited) clipRemaining -= Date.now() - clipStartedAt;
-    clearTimeout(clipTimer);
+    clearInterval(watchTimer);
     if (!playing) return;
+    anchorPos = currentPos();
     playing = false;
-    try { await api('PUT', '/me/player/pause' + devQ()); } catch (e) { /* allerede stoppet */ }
+    try {
+      if (onBrowser()) await player.pause();
+      else await api('PUT', '/me/player/pause' + devQ());
+    } catch (e) { /* allerede stoppet */ }
   }
+  // Returnerer false, hvis klippet allerede er spillet færdigt
   async function resume() {
-    if (playing) return;
-    if (clipLimited && clipRemaining <= 0) return; // klippet er spillet færdigt
-    await api('PUT', '/me/player/play' + devQ());
+    if (playing) return true;
+    if (ended) return false;
+    if (onBrowser()) await player.resume();
+    else await api('PUT', '/me/player/play' + devQ());
+    anchorAt = Date.now();
     playing = true;
-    armClip();
+    watch();
+    return true;
   }
   async function stop() {
-    clipRemaining = 0;
+    ended = true;
     await pause();
   }
+  function onClipEnd(fn) { clipEndCb = fn || (() => {}); }
   function logout() {
     localStorage.removeItem(TOK);
     localStorage.removeItem(DEV);
@@ -225,11 +260,14 @@ window.JPSpotify = (function () {
   }
 
   return {
-    init, login, handleRedirect, reportError, activate, devices, play, pause, resume, stop, logout,
+    init, login, handleRedirect, reportError, activate, devices, play, pause, resume, stop, logout, onClipEnd,
     setTarget, targetDevice,
     get browserDevice() { return browserDevice; },
     get status() { return status; },
     get playing() { return playing; },
+    get position() { return currentPos(); },
+    get ended() { return ended; },
+    api,
     get loggedIn() { return !!readToken(); }
   };
 })();

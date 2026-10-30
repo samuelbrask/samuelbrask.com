@@ -4,13 +4,15 @@ window.Q = (function () {
   const COLORS = ['#FF4D6D', '#2EA8FF', '#2BD67B', '#FFD23F', '#A77BFF', '#FF9F1C'];
   const NAMES = ['Rødt hold', 'Blåt hold', 'Grønt hold', 'Gult hold', 'Lilla hold', 'Orange hold'];
 
+  const blankQ = () => ({ q: '', a: '', url: '', start: 0, stop: 0 });
+
   function blank(cols, rows) {
     return {
       title: 'Sommerhus-Jeopardy',
       values: Array.from({ length: rows }, (_, i) => (i + 1) * 100),
       categories: Array.from({ length: cols }, (_, i) => ({
         name: 'Kategori ' + (i + 1),
-        questions: Array.from({ length: rows }, () => ({ q: '', url: '' }))
+        questions: Array.from({ length: rows }, () => blankQ())
       }))
     };
   }
@@ -23,9 +25,13 @@ window.Q = (function () {
       values: Array.from({ length: rows }, (_, i) => Number((x.values || [])[i]) || (i + 1) * 100),
       categories: x.categories.slice(0, 10).map((k, i) => ({
         name: String(k.name ?? 'Kategori ' + (i + 1)),
+        clip: !!k.clip,
         questions: Array.from({ length: rows }, (_, r) => {
           const q = (k.questions || [])[r] || {};
-          return { q: String(q.q || ''), url: String(q.url || q.spotify || '') };
+          return {
+            q: String(q.q || ''), a: String(q.a || ''), url: String(q.url || q.spotify || ''),
+            start: Number(q.start) || 0, stop: Number(q.stop) || 0
+          };
         })
       }))
     };
@@ -73,5 +79,5 @@ window.Q = (function () {
     clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), ms || 4000);
   }
 
-  return { COLORS, NAMES, blank, fix, loadQuiz, saveQuiz, clearQuiz, loadGame, newGame, saveGame, spotifyId, esc, toast };
+  return { COLORS, NAMES, blank, blankQ, fix, loadQuiz, saveQuiz, clearQuiz, loadGame, newGame, saveGame, spotifyId, esc, toast };
 })();

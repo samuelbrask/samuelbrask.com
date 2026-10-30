@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <header class="ed-top">
@@ -16,6 +16,7 @@
   <label>Kolonner <select id="cols"></select></label>
   <label>Rækker <select id="rows"></select></label>
   <span class="saved" id="saved"></span>
+  <span class="sp-mini" id="spMini">Spotify: forbinder…</span>
   <div class="actions">
     <button class="btn ghost" id="btnImport" type="button">Indsæt quiz</button>
     <button class="btn ghost" id="btnExport" type="button">Hent quiz.json</button>
@@ -23,8 +24,28 @@
   </div>
 </header>
 <div class="ed-wrap"><div class="ed-grid" id="grid"></div></div>
-<p class="ed-help">Alt gemmes automatisk i denne browser. Point skrives i venstre kolonne. Spotify-link: højreklik på sangen i Spotify → Del → Kopiér link til sang. Spørgsmålet er valgfrit – står feltet tomt, vises kun musikken.</p>
-<script src="quiz.js?v=2"></script>
-<script src="rediger.js?v=2"></script>
+<p class="ed-help">Alt gemmes automatisk i denne browser. Point skrives i venstre kolonne. Klik 🔍 for at søge sangen frem i Spotify, eller indsæt et link. Spørgsmål og svar er valgfrie. <b>▶ afspiller sangen, så du kan høre, at det er den rigtige. Skal musikken stoppe af sig selv (fx "Another One"), så sæt flueben under kategoriens navn – så kommer Start og Stop frem i den kategori.</p>
+
+<div class="pv-bar" id="pvBar" hidden>
+  <span id="pvWhat"></span>
+  <span class="pv-time" id="pvTime">0:00.0</span>
+  <button class="btn" id="pvStart" type="button">Start her</button>
+  <button class="btn primary" id="pvStop" type="button">Stop her</button>
+  <button class="btn ghost" id="pvPause" type="button">Pause</button>
+  <button class="btn ghost" id="pvClose" type="button">Luk</button>
+</div>
+
+<dialog id="sDlg" class="s-dlg">
+  <div class="s-head">
+    <input type="text" id="sQ" placeholder="Søg fx: Whigfield Saturday Night" autocomplete="off">
+    <button class="btn ghost" id="sClose" type="button">Luk</button>
+  </div>
+  <p class="sp-hint" id="sMsg"></p>
+  <ul class="s-list" id="sList"></ul>
+</dialog>
+<script src="config.js?v=3"></script>
+<script src="quiz.js?v=3"></script>
+<script src="spotify.js?v=3"></script>
+<script src="rediger.js?v=3"></script>
 </body>
 </html>
