@@ -270,7 +270,8 @@ label.check input { width: 20px; height: 20px; accent-color: var(--gold); }
 .sp-dot { position: absolute; top: 4px; right: 4px; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
 .sp-btn[data-status="ready"] .sp-dot { background: var(--ok); }
 .sp-btn[data-status="error"] .sp-dot, .sp-btn[data-status="nocfg"] .sp-dot { background: var(--bad); }
-.sp-btn[data-status="error"] { opacity: 1; }
+.sp-btn[data-status="error"], .sp-btn[data-status="off"], .sp-btn[data-status="connecting"] { opacity: 1; }
+.sp-status { overflow-wrap: anywhere; }
 .sp-panel {
   position: fixed; top: 60px; right: 12px; z-index: 21; width: min(360px, 90vw);
   background: var(--night-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px;

@@ -233,12 +233,12 @@
     if (m.n === lastMusicN) return;
     lastMusicN = m.n;
     const q = JP.qAt(C, S.cur);
-    const run = p => p.catch(e => JP.toast(e.message, 6000));
+    const run = p => p.catch(e => { JPSpotify.reportError(e.message); JP.toast(e.message, 15000); });
     if (m.cmd === 'play') {
       if (!q || q.type !== 'music') return;
       const id = JP.spotifyId(q.spotify);
       if (!id) { JP.toast('Spørgsmålet har ikke et gyldigt Spotify-link'); return; }
-      if (!JPSpotify.loggedIn) { JP.toast('Spotify er ikke forbundet på tavlen'); return; }
+      if (!JPSpotify.loggedIn) { JPSpotify.reportError('Spotify er ikke forbundet. Klik ♪ og log ind.'); JP.toast('Spotify er ikke forbundet på tavlen – klik ♪ øverst til højre', 15000); return; }
       const len = q.len == null || q.len === '' ? C.settings.clip : q.len;
       run(JPSpotify.play(id, q.start || 0, len));
     } else if (m.cmd === 'pause') run(JPSpotify.pause());
@@ -284,10 +284,22 @@
     body.innerHTML =
       '<label class="sp-label">Afspil på<select id="spDev">' + opts + '</select></label>' +
       '<p class="sp-hint">Telefonen dukker op her, når Spotify-appen er åben på den.</p>' +
+      '<div class="sp-row"><button class="btn primary" id="spTest" type="button">Test lyd (10 sek)</button></div>' +
+      '<p class="sp-hint" id="spTestMsg"></p>' +
       '<div class="sp-row"><button class="btn" id="spRefresh" type="button">Opdater enheder</button>' +
       '<button class="btn ghost" id="spOut" type="button">Log ud</button></div>';
     $('#spDev').onchange = e => { JPSpotify.setTarget(e.target.value); JP.toast('Afspilningsenhed gemt'); };
     $('#spRefresh').onclick = () => renderSpotify(JPSpotify.status);
+    $('#spTest').onclick = async () => {
+      JP.unlockAudio(); JPSpotify.activate();
+      const tm = $('#spTestMsg');
+      let id = null;
+      (C.categories || []).forEach(k => (k.questions || []).forEach(q => { if (!id && q.type === 'music') id = JP.spotifyId(q.spotify); }));
+      id = id || '4uLU6hMCjMI75M1A2tKUQC';
+      tm.textContent = 'Starter afspilning…';
+      try { await JPSpotify.play(id, 0, 10); tm.textContent = 'Spotify har accepteret afspilningen. Hører du ingenting, så tjek computerens lydstyrke.'; }
+      catch (e) { JPSpotify.reportError(e.message); tm.textContent = e.message; }
+    };
     $('#spOut').onclick = () => { JPSpotify.logout(); renderSpotify('off'); };
   }
   document.addEventListener('click', e => {

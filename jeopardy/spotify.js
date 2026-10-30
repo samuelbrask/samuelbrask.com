@@ -93,10 +93,22 @@ window.JPSpotify = (function () {
     if (!r.ok) {
       let msg = txt;
       try { msg = JSON.parse(txt).error.message; } catch (e) { /* tekst */ }
-      throw new Error('Spotify ' + r.status + ': ' + msg);
+      const err = new Error(friendly(r.status, msg));
+      err.status = r.status;
+      throw err;
     }
     return txt ? JSON.parse(txt) : null;
   }
+
+  function friendly(code, msg) {
+    const raw = ' (Spotify ' + code + ': ' + msg + ')';
+    if (code === 401) return 'Spotify-login er udløbet. Log ud og ind igen i ♪-panelet.' + raw;
+    if (code === 403) return 'Spotify afviser afspilningen. Tjek at din konto har Premium og står under User Management i Spotify-appen på developer.spotify.com.' + raw;
+    if (code === 404) return 'Spotify kan ikke finde afspilleren. Genindlæs tavlen (⌘R), klik Start tavlen og vent på grøn prik.' + raw;
+    if (code === 429) return 'Spotify beder os vente lidt. Prøv igen om et øjeblik.' + raw;
+    return 'Spotify-fejl.' + raw;
+  }
+  function reportError(msg) { setStatus('error', msg); }
 
   function init(cb) {
     onStatus = cb || onStatus;
@@ -116,7 +128,12 @@ window.JPSpotify = (function () {
       getOAuthToken: cb => { token().then(t => cb(t || '')); },
       volume: 0.9
     });
-    player.addListener('ready', ({ device_id }) => { browserDevice = device_id; setStatus('ready'); });
+    player.addListener('ready', ({ device_id }) => {
+      browserDevice = device_id;
+      setStatus('ready');
+      // Registrér tavlen som aktiv enhed hos Spotify, så den kan findes, når musikken skal spille
+      if (!localStorage.getItem(DEV)) wakeDevice(device_id).catch(() => {});
+    });
     player.addListener('not_ready', () => setStatus('connecting', 'Genforbinder…'));
     player.addListener('initialization_error', e => setStatus('error', 'Browseren kan ikke afspille: ' + e.message));
     player.addListener('authentication_error', () => setStatus('error', 'Log ind på Spotify igen'));
@@ -143,13 +160,40 @@ window.JPSpotify = (function () {
     if (clipLimited) clipTimer = setTimeout(() => { pause(); clipRemaining = 0; }, clipRemaining);
   }
 
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  async function wakeDevice(id) {
+    await api('PUT', '/me/player', { device_ids: [id], play: false });
+    await wait(900);
+  }
+
   async function play(trackId, startSec, lenSec) {
     clearTimeout(clipTimer);
-    await api('PUT', '/me/player/play' + devQ(), {
+    const body = {
       uris: ['spotify:track:' + trackId],
       position_ms: Math.max(0, Math.round((Number(startSec) || 0) * 1000))
-    });
+    };
+    try {
+      await api('PUT', '/me/player/play' + devQ(), body);
+    } catch (e) {
+      if (e.status !== 404) throw e;
+      // En gemt enhed findes ikke længere: brug tavlen selv
+      if (localStorage.getItem(DEV) && browserDevice) localStorage.removeItem(DEV);
+      const id = targetDevice();
+      if (!id) throw e;
+      // Spotify kender ikke tavlen endnu: væk den og prøv igen
+      try { await wakeDevice(id); } catch (e2) { /* prøv alligevel */ }
+      try {
+        await api('PUT', '/me/player/play?device_id=' + encodeURIComponent(id), body);
+      } catch (e3) {
+        if (e3.status !== 404 || !player) throw e3;
+        // Sidste forsøg: genstart den skjulte afspiller
+        player.disconnect(); await wait(500); await player.connect(); await wait(2500);
+        if (browserDevice) await wakeDevice(browserDevice);
+        await api('PUT', '/me/player/play?device_id=' + encodeURIComponent(targetDevice()), body);
+      }
+    }
     playing = true;
+    if (status === 'error') setStatus(player && browserDevice ? 'ready' : status);
     clipLimited = Number(lenSec) > 0;
     clipRemaining = clipLimited ? Number(lenSec) * 1000 : 0;
     armClip();
@@ -181,7 +225,7 @@ window.JPSpotify = (function () {
   }
 
   return {
-    init, login, handleRedirect, activate, devices, play, pause, resume, stop, logout,
+    init, login, handleRedirect, reportError, activate, devices, play, pause, resume, stop, logout,
     setTarget, targetDevice,
     get browserDevice() { return browserDevice; },
     get status() { return status; },
