@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pakkelisten, der kender vejret</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--dyb:#063033;--petrol:#0E5A67;--mint:#2AC8A5;--mintlys:#A6EDDE;
+  --koral:#FF611A;--creme:#FFEAD7;--dis:#7FA0A4;--tone:#4C6E71;
+  --h:'Montserrat',system-ui,sans-serif;--b:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--creme);color:var(--dyb);font-family:var(--b);line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+.ramme{max-width:980px;margin:0 auto;padding:0 24px}
+header{background:var(--dyb);color:var(--creme);padding:54px 0 48px}
+.mrk{display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:600;color:var(--mint)}
+.mrk::before{content:"";width:46px;height:1px;background:var(--mint);opacity:.6}
+h1{font-family:var(--h);font-weight:900;font-size:clamp(32px,5vw,52px);line-height:.98;
+  letter-spacing:-.03em;margin:18px 0 14px}
+header p{color:var(--mintlys);max-width:54ch;font-size:17px}
+.form{display:flex;gap:12px;flex-wrap:wrap;margin:34px 0 0;align-items:flex-end}
+.felt{display:flex;flex-direction:column;gap:7px}
+.felt label{font-size:13px;font-weight:600;color:var(--tone)}
+input,select{font:500 16px/1 var(--b);padding:14px 16px;border:1px solid rgba(6,48,51,.2);
+  border-radius:10px;background:#fff;color:var(--dyb);min-width:170px}
+button.ga{font:700 16px/1 var(--b);background:var(--koral);color:#fff;border:0;
+  border-radius:10px;padding:16px 26px;cursor:pointer}
+button.ga:disabled{opacity:.5;cursor:default}
+main{padding:34px 0 80px}
+.besked{padding:18px 20px;border-radius:12px;background:#fff;border:1px solid rgba(6,48,51,.12);
+  color:var(--tone);font-size:16px}
+.vejr{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px;margin-bottom:30px}
+.dag{background:var(--dyb);color:var(--creme);border-radius:12px;padding:16px 14px;text-align:center}
+.dag b{display:block;font-family:var(--h);font-size:13px;color:var(--mint);margin-bottom:8px;
+  text-transform:capitalize}
+.dag .ikon{font-size:27px;line-height:1;margin-bottom:8px}
+.dag .grad{font-family:var(--h);font-weight:800;font-size:21px}
+.dag .mm{font-size:12.5px;color:var(--dis);margin-top:5px}
+.resume{background:#fff;border-left:4px solid var(--koral);border-radius:0 12px 12px 0;
+  padding:20px 24px;margin-bottom:28px;font-size:17.5px;color:var(--tone)}
+.resume b{display:block;font-family:var(--h);font-size:20px;color:var(--dyb);margin-bottom:6px}
+.grupper{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.gr{background:#fff;border:1px solid rgba(6,48,51,.11);border-radius:13px;padding:20px 22px}
+.gr h3{font-family:var(--h);font-size:14px;color:var(--koral);margin-bottom:13px;letter-spacing:.02em}
+.gr label{display:flex;gap:11px;align-items:flex-start;padding:7px 0;cursor:pointer;font-size:16px}
+.gr input{min-width:0;width:19px;height:19px;accent-color:var(--mint);margin-top:2px;flex:none}
+.gr label.af span{text-decoration:line-through;color:var(--dis)}
+.tilfoej{display:flex;gap:8px;margin-top:12px}
+.tilfoej input{flex:1;min-width:0;padding:10px 12px;font-size:15px}
+.tilfoej button{background:var(--petrol);color:#fff;border:0;border-radius:8px;padding:0 15px;
+  cursor:pointer;font:600 15px var(--b)}
+footer{background:var(--dyb);color:var(--dis);padding:40px 0;font-size:15px}
+footer b{color:var(--mintlys)}
+</style>
+</head>
+<body>
+<header><div class="ramme">
+  <div class="mrk">AI Build Day · eksempel</div>
+  <h1>Pakkelisten, der kender vejret</h1>
+  <p>Den henter en rigtig vejrudsigt og laver listen derefter. Ingen nøgle, ingen konto, ingen regning.</p>
+  <div class="form">
+    <div class="felt"><label for="by">Hvor skal du hen?</label>
+      <input id="by" value="Barcelona" autocomplete="off"></div>
+    <div class="felt"><label for="dato">Afrejse</label><input id="dato" type="date"></div>
+    <div class="felt"><label for="dage">Antal dage</label>
+      <select id="dage"><option>3</option><option selected>5</option><option>7</option><option>10</option></select></div>
+    <button class="ga" id="ga">Lav min liste</button>
+  </div>
+</div></header>
+
+<main><div class="ramme">
+  <div id="ud"><div class="besked">Tryk på knappen, så henter den vejrudsigten.</div></div>
+</div></main>
+
+<footer><div class="ramme">
+  <p><b>Sådan virker den.</b> Vejret kommer fra Open-Meteo, som er gratis og ikke kræver, at du opretter noget. Listen bygges ud fra temperatur og nedbør, og afkrydsningen gemmes i din browser.</p>
+</div></footer>
+
+<script>
+const ko={0:["☀️","klart"],1:["🌤️","mest klart"],2:["⛅","skiftende"],3:["☁️","overskyet"],
+ 45:["🌫️","tåge"],48:["🌫️","tåge"],51:["🌦️","støvregn"],53:["🌦️","støvregn"],55:["🌦️","støvregn"],
+ 61:["🌧️","regn"],63:["🌧️","regn"],65:["🌧️","kraftig regn"],71:["🌨️","sne"],73:["🌨️","sne"],
+ 75:["🌨️","kraftig sne"],80:["🌦️","byger"],81:["🌦️","byger"],82:["⛈️","kraftige byger"],
+ 95:["⛈️","torden"],96:["⛈️","torden"],99:["⛈️","torden"]};
+const d=new Date(); d.setDate(d.getDate()+2);
+document.getElementById('dato').value=d.toISOString().slice(0,10);
+
+const GRUPPER={
+ "Tøj":[], "Toiletsager":["Tandbørste og tandpasta","Deodorant","Medicin"],
+ "Elektronik":["Oplader til telefon","Powerbank","Hovedtelefoner"],
+ "Dokumenter":["Pas","Rejseforsikring","Billetter"]
+};
+
+document.getElementById('ga').addEventListener('click',async()=>{
+  const by=document.getElementById('by').value.trim();
+  const fra=document.getElementById('dato').value;
+  const dage=+document.getElementById('dage').value;
+  const ud=document.getElementById('ud');
+  if(!by||!fra){ud.innerHTML='<div class="besked">Skriv en by og en dato først.</div>';return;}
+  ud.innerHTML='<div class="besked">Henter vejrudsigten for '+by+'…</div>';
+  try{
+    const g=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=da&name='
+      +encodeURIComponent(by)).then(r=>r.json());
+    if(!g.results||!g.results.length){
+      ud.innerHTML='<div class="besked">Jeg kunne ikke finde '+by+'. Prøv at stave den anderledes.</div>';return;}
+    const {latitude:la,longitude:lo,name,country}=g.results[0];
+    const graense=new Date(); graense.setDate(graense.getDate()+15);
+    let slut=new Date(fra); slut.setDate(slut.getDate()+dage-1);
+    if(slut>graense) slut=graense;
+    if(new Date(fra)>graense){ud.innerHTML='<div class="besked">Prognosen rækker cirka 16 dage frem. '
+      +'Vælg en dato tættere på i dag, så henter den rigtige tal.</div>';return;}
+    const v=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+la+'&longitude='+lo
+      +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum'
+      +'&timezone=auto&start_date='+fra+'&end_date='+slut.toISOString().slice(0,10)).then(r=>r.json());
+    if(!v.daily||!v.daily.time.length){
+      ud.innerHTML='<div class="besked">Der er ingen prognose så langt frem endnu. '
+        +'Open-Meteo rækker cirka 16 dage frem. Prøv en dato tættere på i dag.</div>';return;}
+    vis(name+', '+country, v.daily);
+  }catch(e){
+    ud.innerHTML='<div class="besked">Noget gik galt undervejs: '+e.message+'</div>';
+  }
+});
+
+function vis(sted, d){
+  const maks=Math.max(...d.temperature_2m_max), min=Math.min(...d.temperature_2m_min);
+  const regn=d.precipitation_sum.reduce((a,b)=>a+b,0);
+  const regndage=d.precipitation_sum.filter(x=>x>1).length;
+  const kort=d.time.map((t,i)=>{
+    const k=ko[d.weather_code[i]]||["🌡️",""];
+    const dag=new Date(t).toLocaleDateString('da-DK',{weekday:'short',day:'numeric',month:'short'});
+    return '<div class="dag"><b>'+dag+'</b><div class="ikon">'+k[0]+'</div>'
+      +'<div class="grad">'+Math.round(d.temperature_2m_max[i])+'°</div>'
+      +'<div class="mm">'+Math.round(d.temperature_2m_min[i])+'° · '
+      +(d.precipitation_sum[i]>0?Math.round(d.precipitation_sum[i])+' mm':'tørt')+'</div></div>';
+  }).join('');
+
+  const toej=[];
+  if(maks>=24) toej.push("Shorts","T-shirts","Badetøj","Solcreme","Solbriller","Kasket eller hat");
+  if(maks>=16&&maks<24) toej.push("Lange bukser","T-shirts","En let trøje","En tynd jakke");
+  if(maks<16) toej.push("Varm trøje","Lange bukser","Jakke","Halstørklæde");
+  if(min<10) toej.push("Noget at have under, når solen går ned");
+  if(regndage>0) toej.push("Regnjakke","Vandtætte sko");
+  if(regndage>=3) toej.push("Paraply");
+  toej.push("Undertøj og sokker til "+d.time.length+" dage","Et sæt pænt tøj");
+
+  const g=JSON.parse(JSON.stringify(GRUPPER)); g["Tøj"]=toej;
+  if(regndage>=2) g["Elektronik"].push("Vandtæt pose til telefonen");
+
+  let txt="Det bliver mellem "+Math.round(min)+" og "+Math.round(maks)+" grader.";
+  txt += regndage===0 ? " Der er ikke regn i udsigten, så du kan pakke let."
+       : regndage===1 ? " Der er regn én af dagene, så tag en jakke med."
+       : " Der er regn "+regndage+" af dagene, så regntøj er ikke til diskussion.";
+
+  document.getElementById('ud').innerHTML =
+    '<div class="vejr">'+kort+'</div>'
+    +'<div class="resume"><b>'+sted+'</b>'+txt+'</div>'
+    +'<div class="grupper">'+Object.entries(g).map(([navn,ting])=>
+      '<div class="gr"><h3>'+navn.toUpperCase()+'</h3>'
+      +ting.map(t=>'<label><input type="checkbox" data-t="'+encodeURIComponent(t)+'"><span>'+t+'</span></label>').join('')
+      +'<div class="tilfoej"><input placeholder="Tilføj noget"><button>Tilføj</button></div></div>').join('')
+    +'</div>';
+  hent(); bind();
+}
+
+function bind(){
+  document.querySelectorAll('.gr input[type=checkbox]').forEach(c=>
+    c.addEventListener('change',()=>{c.closest('label').classList.toggle('af',c.checked);gem();}));
+  document.querySelectorAll('.tilfoej button').forEach(b=>b.addEventListener('click',()=>{
+    const i=b.previousElementSibling, v=i.value.trim(); if(!v)return;
+    const l=document.createElement('label');
+    l.innerHTML='<input type="checkbox" data-t="'+encodeURIComponent(v)+'"><span>'+v+'</span>';
+    b.closest('.gr').insertBefore(l,b.closest('.tilfoej'));
+    i.value=''; bind(); gem();
+  }));
+}
+function gem(){
+  const af=[...document.querySelectorAll('.gr input:checked')].map(c=>c.dataset.t);
+  try{localStorage.setItem('pakke',JSON.stringify(af));}catch(e){}
+}
+function hent(){
+  try{const af=JSON.parse(localStorage.getItem('pakke')||'[]');
+    document.querySelectorAll('.gr input[type=checkbox]').forEach(c=>{
+      if(af.includes(c.dataset.t)){c.checked=true;c.closest('label').classList.add('af');}});
+  }catch(e){}
+}
+</script>
+</body></html>
